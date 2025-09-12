@@ -1,0 +1,7 @@
+.fox-cursor {
+  cursor: url('/cursors/fox-cursor.png'), auto;
+}
+
+.fox-cursor-active {
+  cursor: url('/cursors/fox-cursor-active.png'), pointer;
+}

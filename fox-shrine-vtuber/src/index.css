@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Nunito:wght@300;400;600;700&family=Satisfy&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #F5F1E8;
+  color: #333333;
+  font-family: 'Nunito', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cinzel', serif;
+}
+
+@layer components {
+  .shrine-card {
+    @apply bg-shrine-white rounded-lg p-6 shadow-lg border-t-4 border-shrine-red;
+  }
+  
+  .fox-button {
+    @apply bg-fox-orange text-white font-medium py-2 px-6 rounded-full hover:bg-shrine-red transition-colors duration-300 shadow-md;
+  }
+  
+  .section-title {
+    @apply font-cinzel text-3xl md:text-4xl text-shrine-red mb-6 relative;
+  }
+  
+  .section-title::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-16 h-1 bg-fox-orange mt-2;
+  }
+}
