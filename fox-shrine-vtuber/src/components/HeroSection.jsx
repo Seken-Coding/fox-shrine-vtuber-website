@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FoxCharacterPlaceholder } from './PlaceholderImages';
 
 const HeroSection = () => {
   return (
     <div className="relative min-h-screen flex items-center">
       {/* Background with shrine gradient overlay */}
-      <div className="absolute inset-0 bg-cover bg-center z-0" style={{ backgroundImage: 'url(/hero-bg.jpg)' }}>
+      <div className="absolute inset-0 bg-gradient-to-br from-shrine-red via-fox-orange to-shrine-teal z-0">
         <div className="absolute inset-0 bg-gradient-to-r from-shrine-red/70 to-fox-orange/40"></div>
       </div>
       
@@ -32,12 +33,8 @@ const HeroSection = () => {
             </div>
           </div>
           
-          <div className="w-full md:w-1/2 mt-8 md:mt-0">
-            <img 
-              src="/fox-character.png" 
-              alt="Fox VTuber" 
-              className="max-w-md mx-auto animate-float"
-            />
+          <div className="w-full md:w-1/2 mt-8 md:mt-0 flex justify-center">
+            <FoxCharacterPlaceholder className="max-w-md animate-float" />
           </div>
         </div>
         

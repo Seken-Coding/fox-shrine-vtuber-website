@@ -1,4 +1,5 @@
 import React from 'react';
+import { PlaceholderImage } from './PlaceholderImages';
 
 const merchData = [
   {
@@ -57,9 +58,10 @@ const MerchShowcase = () => {
                 )}
                 
                 <div className="h-64 overflow-hidden">
-                  <img 
-                    src={item.image} 
-                    alt={item.name}
+                  <PlaceholderImage 
+                    width="100%"
+                    height="100%"
+                    text="🛍️ Merch"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                 </div>

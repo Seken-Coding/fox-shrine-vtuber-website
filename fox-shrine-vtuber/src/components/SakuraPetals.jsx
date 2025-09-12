@@ -30,12 +30,12 @@ const SakuraPetals = () => {
   }, []);
   
   return (
-    <div id="sakura-container" className="fixed inset-0 z-10 pointer-events-none">
-      <style jsx>{`
+    <>
+      <style>{`
         .sakura-petal {
           position: absolute;
-          background-image: url('/decorative/petal.svg');
-          background-size: cover;
+          background: linear-gradient(45deg, #ffb7c5, #ffc0cb);
+          border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
           top: -20px;
           opacity: 0.6;
           animation-name: falling;
@@ -62,7 +62,8 @@ const SakuraPetals = () => {
           }
         }
       `}</style>
-    </div>
+      <div id="sakura-container" className="fixed inset-0 z-10 pointer-events-none"></div>
+    </>
   );
 };
 

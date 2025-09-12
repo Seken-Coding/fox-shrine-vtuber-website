@@ -2,11 +2,13 @@ import React from 'react';
 import { FaTwitter, FaFacebook, FaReddit, FaLink } from 'react-icons/fa';
 
 const SocialShare = ({ url, title }) => {
-  const encodedUrl = encodeURIComponent(url);
-  const encodedTitle = encodeURIComponent(title);
+  const currentUrl = url || (typeof window !== 'undefined' ? window.location.href : 'https://foxshrine.com');
+  const shareTitle = title || 'Fox Shrine VTuber';
+  const encodedUrl = encodeURIComponent(currentUrl);
+  const encodedTitle = encodeURIComponent(shareTitle);
   
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(url);
+    navigator.clipboard.writeText(currentUrl);
     alert('Link copied to clipboard!');
   };
   

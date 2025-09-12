@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaTwitch, FaYoutube, FaTwitter, FaDiscord, FaInstagram } from 'react-icons/fa';
+import { LogoPlaceholder } from './PlaceholderImages';
 
 const Footer = () => {
   return (
@@ -10,12 +11,7 @@ const Footer = () => {
           {/* Logo & Description */}
           <div className="col-span-1 md:col-span-1">
             <Link to="/" className="flex items-center">
-              <img 
-                src="/logo.png" 
-                alt="Fox Shrine VTuber" 
-                className="h-10 w-auto" 
-              />
-              <span className="ml-3 font-cinzel text-shrine-red text-xl">Fox Shrine</span>
+              <LogoPlaceholder className="h-10" />
             </Link>
             <p className="mt-4 text-sm text-gray-300">
               Fun, silly adventures from your favorite shrine fox VTuber!

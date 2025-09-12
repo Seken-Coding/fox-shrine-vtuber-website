@@ -1,4 +1,5 @@
 import React from 'react';
+import { PlaceholderImage } from './PlaceholderImages';
 
 const videoData = [
   {
@@ -37,9 +38,10 @@ const LatestVideos = () => {
           {videoData.map(video => (
             <div key={video.id} className="group">
               <div className="relative overflow-hidden rounded-lg shadow-lg">
-                <img 
-                  src={video.thumbnail} 
-                  alt={video.title}
+                <PlaceholderImage 
+                  width="100%"
+                  height={208}
+                  text="📹 Video"
                   className="w-full h-52 object-cover transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute bottom-0 right-0 bg-shrine-dark/80 text-white px-2 py-1 text-sm">

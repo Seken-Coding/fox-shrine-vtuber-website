@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { LogoPlaceholder } from './PlaceholderImages';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,12 +25,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img 
-              src="/logo.png" 
-              alt="Fox Shrine VTuber" 
-              className="h-10 w-auto" 
-            />
-            <span className="ml-3 font-cinzel text-shrine-red text-xl">Fox Shrine</span>
+            <LogoPlaceholder className="h-10" />
           </Link>
 
           {/* Desktop Menu */}

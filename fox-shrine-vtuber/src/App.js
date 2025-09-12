@@ -1,12 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
+import AboutPage from './pages/AboutPage';
 import ScrollToTop from './components/ScrollToTop';
 
 // Import other pages as they're created
-// import AboutPage from './pages/AboutPage';
 // import SchedulePage from './pages/SchedulePage';
 // import ContentPage from './pages/ContentPage';
 // import MerchPage from './pages/MerchPage';
@@ -15,14 +16,15 @@ import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   return (
-    <Router>
-      <ScrollToTop />
-      <Navbar />
-      <main>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          {/* Add other routes as pages are created */}
-          {/* <Route path="/about" element={<AboutPage />} /> */}
+    <HelmetProvider>
+      <Router>
+        <ScrollToTop />
+        <Navbar />
+        <main>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            {/* Add other routes as pages are created */}
+            <Route path="/about" element={<AboutPage />} />
           {/* <Route path="/schedule" element={<SchedulePage />} /> */}
           {/* <Route path="/content" element={<ContentPage />} /> */}
           {/* <Route path="/merch" element={<MerchPage />} /> */}
@@ -43,6 +45,7 @@ function App() {
       </main>
       <Footer />
     </Router>
+    </HelmetProvider>
   );
 }
 

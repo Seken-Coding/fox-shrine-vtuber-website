@@ -14,11 +14,11 @@ const HomePage = () => {
         <div className="container mx-auto px-4">
           <h2 className="section-title text-white text-center">Latest Stream</h2>
           <div className="mt-8 max-w-4xl mx-auto">
-            <div className="aspect-w-16 aspect-h-9">
+            <div className="aspect-w-16 relative" style={{ paddingBottom: '56.25%' }}>
               <iframe 
                 src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
                 title="Latest Stream"
-                className="w-full h-full"
+                className="absolute top-0 left-0 w-full h-full rounded-lg"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
