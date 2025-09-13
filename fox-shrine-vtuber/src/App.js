@@ -1,10 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
+import { ConfigProvider } from './hooks/useConfigDatabase';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
+import SetupPage from './pages/SetupPage';
 import ScrollToTop from './components/ScrollToTop';
 
 // Import other pages as they're created
@@ -17,14 +19,19 @@ import ScrollToTop from './components/ScrollToTop';
 function App() {
   return (
     <HelmetProvider>
-      <Router>
-        <ScrollToTop />
-        <Navbar />
-        <main>
+      <ConfigProvider>
+        <Router>
+          <ScrollToTop />
+          <Navbar />
+          <main>
           <Routes>
             <Route path="/" element={<HomePage />} />
             {/* Add other routes as pages are created */}
             <Route path="/about" element={<AboutPage />} />
+            {/* Development Only - Setup Page */}
+            {process.env.NODE_ENV === 'development' && (
+              <Route path="/setup" element={<SetupPage />} />
+            )}
           {/* <Route path="/schedule" element={<SchedulePage />} /> */}
           {/* <Route path="/content" element={<ContentPage />} /> */}
           {/* <Route path="/merch" element={<MerchPage />} /> */}
@@ -41,10 +48,11 @@ function App() {
               </div>
             </div>
           } />
-        </Routes>
-      </main>
-      <Footer />
-    </Router>
+          </Routes>
+        </main>
+        <Footer />
+      </Router>
+      </ConfigProvider>
     </HelmetProvider>
   );
 }
