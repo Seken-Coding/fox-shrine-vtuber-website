@@ -1,0 +1,32 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+.github
+# General Dependencies
+# Ignores any node_modules directory in the project
+node_modules/
+/.pnp
+.pnp.js
+
+# General Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# General Misc
+.DS_Store
+
+# Environment variables
+# Ignore all .env files in any directory
+**/.env
+.env.*
+# But DO NOT ignore example files
+!**/.env.example
+!**/.env.defaults
+
+# Frontend: React App (in fox-shrine-vtuber/)
+fox-shrine-vtuber/build/
+fox-shrine-vtuber/coverage/
+
+# Backend: API (in api/)
+# Note: node_modules and .env are already covered by the general rules above
+/api/logs/
+/api/dist/

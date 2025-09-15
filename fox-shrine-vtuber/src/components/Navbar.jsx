@@ -124,7 +124,7 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu */}
-        {isOpen && (
+        {!!isOpen && (
           <div className="md:hidden mt-4 py-4 bg-shrine-white rounded-lg shadow-lg">
             <div className="flex flex-col space-y-3 px-4">
               <MobileNavLink to="/" onClick={() => setIsOpen(false)}>Home</MobileNavLink>
@@ -152,7 +152,7 @@ const Navbar = () => {
                         <p className="text-xs text-purple-600">{user.role}</p>
                       </div>
                     </div>
-                    {isAdmin() && (
+                    {!!isAdmin() && (
                       <MobileNavLink to="/admin" onClick={() => setIsOpen(false)}>
                         Admin Dashboard
                       </MobileNavLink>
