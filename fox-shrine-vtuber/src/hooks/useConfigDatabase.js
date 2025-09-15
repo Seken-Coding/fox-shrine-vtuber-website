@@ -1,7 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { useAuth } from './useAuth';
 
 // Create Context
 const ConfigContext = createContext();
+
+export const useConfig = () => useContext(ConfigContext);
 
 // Default configuration fallback
 const defaultConfig = {
@@ -68,6 +71,30 @@ const defaultConfig = {
   }
 };
 
+const isObject = (item) => {
+  return item && typeof item === 'object' && !Array.isArray(item);
+};
+
+const mergeDeep = (target, source) => {
+  const output = { ...target };
+  
+  if (isObject(target) && isObject(source)) {
+    Object.keys(source).forEach(key => {
+      if (isObject(source[key])) {
+        if (!(key in target)) {
+          output[key] = source[key];
+        } else {
+          output[key] = mergeDeep(target[key], source[key]);
+        }
+      } else {
+        output[key] = source[key];
+      }
+    });
+  }
+  
+  return output;
+};
+
 // Configuration Provider Component
 export const ConfigProvider = ({ children }) => {
   const [config, setConfig] = useState(defaultConfig);
@@ -75,6 +102,7 @@ export const ConfigProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [lastSync, setLastSync] = useState(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const { apiCall } = useAuth(); // Keep this to use the authenticated apiCall for updates
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3002/api';
 
@@ -129,29 +157,20 @@ export const ConfigProvider = ({ children }) => {
       }
     } catch (error) {
       console.error('❌ Failed to load configuration from database:', error);
-      
+
       // Try to load from localStorage
       const cachedConfig = localStorage.getItem('foxshrine_config');
-      const cachedTimestamp = localStorage.getItem('foxshrine_config_timestamp');
-      
       if (cachedConfig) {
-        try {
-          const parsedConfig = JSON.parse(cachedConfig);
-          setConfig(parsedConfig);
-          setLastSync(new Date(cachedTimestamp));
-          console.log('📦 Using cached configuration');
-          setError(`Using cached data (${error.message})`);
-          return parsedConfig;
-        } catch (parseError) {
-          console.error('❌ Failed to parse cached configuration:', parseError);
-        }
+        console.log('🔄 Using cached configuration as fallback');
+        setConfig(JSON.parse(cachedConfig));
+      } else {
+        // Fallback to default config
+        setError(error.message);
+        setConfig(defaultConfig);
+        console.log('🔄 Using default configuration as fallback');
       }
-      
-      // Fallback to default config
-      setError(error.message);
-      setConfig(defaultConfig);
-      console.log('🔄 Using default configuration as fallback');
-      return defaultConfig;
+    } finally {
+      setLoading(false);
     }
   }, [API_BASE_URL]);
 
@@ -175,13 +194,9 @@ export const ConfigProvider = ({ children }) => {
       setConfig(newConfig);
 
       // Send to API
-      const response = await fetch(`${API_BASE_URL}/config/${key}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ value, category }),
-        signal: AbortSignal.timeout(10000)
+      const response = await apiCall(`${API_BASE_URL}/config/${key}`, 'PUT', {
+        value,
+        category
       });
 
       if (!response.ok) {
@@ -214,104 +229,7 @@ export const ConfigProvider = ({ children }) => {
       setConfig(config);
       throw error;
     }
-  }, [config, API_BASE_URL]);
-
-  // Bulk update configuration
-  const updateMultipleConfig = useCallback(async (updates) => {
-    try {
-      setError(null);
-      
-      const response = await fetch(`${API_BASE_URL}/config`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ configs: updates }),
-        signal: AbortSignal.timeout(15000)
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Bulk update failed');
-      }
-
-      // Reload configuration after bulk update
-      await loadConfigFromDatabase();
-      
-      console.log(`✅ Bulk configuration updated: ${updates.length} items`);
-      return result.data;
-    } catch (error) {
-      console.error('❌ Failed to bulk update configuration:', error);
-      setError(error.message);
-      throw error;
-    }
-  }, [API_BASE_URL, loadConfigFromDatabase]);
-
-  // Get stream status
-  const getStreamStatus = useCallback(async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/stream/status`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        signal: AbortSignal.timeout(5000)
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      return result.success ? result.data : null;
-    } catch (error) {
-      console.error('❌ Failed to get stream status:', error);
-      return null;
-    }
-  }, [API_BASE_URL]);
-
-  // Update stream status
-  const updateStreamStatus = useCallback(async (streamData) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/stream/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(streamData),
-        signal: AbortSignal.timeout(10000)
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      
-      if (result.success) {
-        // Update local stream config
-        const updatedConfig = { ...config };
-        if (streamData.isLive !== undefined) updatedConfig.stream.isLive = streamData.isLive;
-        if (streamData.title) updatedConfig.stream.title = streamData.title;
-        if (streamData.category) updatedConfig.stream.category = streamData.category;
-        if (streamData.nextStream) updatedConfig.stream.nextStreamDate = streamData.nextStream;
-        if (streamData.notification) updatedConfig.stream.notification = streamData.notification;
-        
-        setConfig(updatedConfig);
-        localStorage.setItem('foxshrine_config', JSON.stringify(updatedConfig));
-      }
-      
-      return result.success ? result.data : null;
-    } catch (error) {
-      console.error('❌ Failed to update stream status:', error);
-      throw error;
-    }
-  }, [config, API_BASE_URL]);
+  }, [config, API_BASE_URL, apiCall]);
 
   // Initial load
   useEffect(() => {
@@ -352,43 +270,17 @@ export const ConfigProvider = ({ children }) => {
     return () => clearInterval(interval);
   }, [isOnline, loadConfigFromDatabase]);
 
-  // Deep merge helper function
-  const mergeDeep = (target, source) => {
-    const output = { ...target };
-    
-    if (isObject(target) && isObject(source)) {
-      Object.keys(source).forEach(key => {
-        if (isObject(source[key])) {
-          if (!(key in target)) {
-            output[key] = source[key];
-          } else {
-            output[key] = mergeDeep(target[key], source[key]);
-          }
-        } else {
-          output[key] = source[key];
-        }
-      });
-    }
-    
-    return output;
-  };
-
-  const isObject = (item) => {
-    return item && typeof item === 'object' && !Array.isArray(item);
-  };
-
-  const contextValue = {
+  
+  
+  const contextValue = useMemo(() => ({
     config,
     loading,
     error,
     lastSync,
     isOnline,
     updateConfig,
-    updateMultipleConfig,
     refreshConfig: loadConfigFromDatabase,
-    getStreamStatus,
-    updateStreamStatus
-  };
+  }), [config, loading, error, lastSync, isOnline, updateConfig, loadConfigFromDatabase]);
 
   return (
     <ConfigContext.Provider value={contextValue}>

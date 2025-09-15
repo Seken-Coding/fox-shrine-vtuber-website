@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 
 // Authentication Context
 const AuthContext = createContext(null);
@@ -13,24 +13,24 @@ export const AuthProvider = ({ children }) => {
     const [error, setError] = useState(null);
 
     // Get stored token
-    const getStoredToken = () => {
+    const getStoredToken = useCallback(() => {
         return localStorage.getItem('foxshrine_access_token');
-    };
+    }, []);
 
     // Store token
-    const storeTokens = (tokens) => {
+    const storeTokens = useCallback((tokens) => {
         localStorage.setItem('foxshrine_access_token', tokens.accessToken);
         localStorage.setItem('foxshrine_refresh_token', tokens.refreshToken);
-    };
+    }, []);
 
     // Clear stored tokens
-    const clearTokens = () => {
+    const clearTokens = useCallback(() => {
         localStorage.removeItem('foxshrine_access_token');
         localStorage.removeItem('foxshrine_refresh_token');
-    };
+    }, []);
 
     // API call helper with authentication
-    const apiCall = async (endpoint, options = {}) => {
+    const apiCall = useCallback(async (endpoint, options = {}) => {
         const token = getStoredToken();
         const headers = {
             'Content-Type': 'application/json',
@@ -54,10 +54,10 @@ export const AuthProvider = ({ children }) => {
         }
 
         return response;
-    };
+    }, [getStoredToken, clearTokens]);
 
     // Load user profile
-    const loadUserProfile = async () => {
+    const loadUserProfile = useCallback(async () => {
         try {
             const token = getStoredToken();
             if (!token) {
@@ -81,10 +81,10 @@ export const AuthProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [getStoredToken, apiCall, clearTokens]);
 
     // Login function
-    const login = async (username, password) => {
+    const login = useCallback(async (username, password) => {
         try {
             setError(null);
             const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -111,10 +111,10 @@ export const AuthProvider = ({ children }) => {
             setError(errorMessage);
             return { success: false, error: errorMessage };
         }
-    };
+    }, [storeTokens]);
 
     // Register function
-    const register = async (userData) => {
+    const register = useCallback(async (userData) => {
         try {
             setError(null);
             const response = await fetch(`${API_BASE_URL}/auth/register`, {
@@ -141,10 +141,10 @@ export const AuthProvider = ({ children }) => {
             setError(errorMessage);
             return { success: false, error: errorMessage };
         }
-    };
+    }, [storeTokens]);
 
     // Logout function
-    const logout = async () => {
+    const logout = useCallback(async () => {
         try {
             await apiCall('/auth/logout', { method: 'POST' });
         } catch (error) {
@@ -153,74 +153,47 @@ export const AuthProvider = ({ children }) => {
             clearTokens();
             setUser(null);
         }
-    };
+    }, [apiCall, clearTokens]);
 
     // Check if user has permission
-    const hasPermission = (permission) => {
+    const hasPermission = useCallback((permission) => {
         return user && user.permissions && user.permissions.includes(permission);
-    };
+    }, [user]);
 
     // Check if user has role
-    const hasRole = (role) => {
+    const hasRole = useCallback((role) => {
         return user && user.role === role;
-    };
+    }, [user]);
 
     // Check if user is admin (Admin or Super Admin)
-    const isAdmin = () => {
+    const isAdmin = useCallback(() => {
         return user && (user.role === 'Admin' || user.role === 'Super Admin');
-    };
+    }, [user]);
 
     // Check if user is authenticated
-    const isAuthenticated = () => {
+    const isAuthenticated = useCallback(() => {
         return !!user;
-    };
-
-    // Update user profile
-    const updateProfile = async (profileData) => {
-        try {
-            setError(null);
-            const response = await apiCall('/auth/profile', {
-                method: 'PUT',
-                body: JSON.stringify(profileData),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                setUser(data.user);
-                return { success: true, user: data.user };
-            } else {
-                setError(data.error || 'Profile update failed');
-                return { success: false, error: data.error || 'Profile update failed' };
-            }
-        } catch (error) {
-            console.error('Profile update error:', error);
-            const errorMessage = 'Network error. Please try again.';
-            setError(errorMessage);
-            return { success: false, error: errorMessage };
-        }
-    };
+    }, [user]);
 
     // Load user on component mount
     useEffect(() => {
         loadUserProfile();
-    }, []);
+    }, [loadUserProfile]);
 
-    const value = {
+    const value = useMemo(() => ({
         user,
         loading,
         error,
         login,
         register,
         logout,
-        updateProfile,
         hasPermission,
         hasRole,
         isAdmin,
         isAuthenticated,
         apiCall,
         setError,
-    };
+    }), [user, loading, error, login, register, logout, hasPermission, hasRole, isAdmin, isAuthenticated, apiCall]);
 
     return (
         <AuthContext.Provider value={value}>
@@ -236,85 +209,6 @@ export const useAuth = () => {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;
-};
-
-// Higher-order component for protected routes
-export const withAuth = (Component, requiredPermission = null, requiredRole = null) => {
-    return function AuthenticatedComponent(props) {
-        const { user, loading, hasPermission, hasRole } = useAuth();
-
-        if (loading) {
-            return (
-                <div className="flex items-center justify-center min-h-screen">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-                </div>
-            );
-        }
-
-        if (!user) {
-            return (
-                <div className="flex items-center justify-center min-h-screen">
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                        <strong className="font-bold">Access Denied!</strong>
-                        <span className="block sm:inline"> You must be logged in to access this page.</span>
-                    </div>
-                </div>
-            );
-        }
-
-        if (requiredPermission && !hasPermission(requiredPermission)) {
-            return (
-                <div className="flex items-center justify-center min-h-screen">
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                        <strong className="font-bold">Permission Denied!</strong>
-                        <span className="block sm:inline"> You don't have the required permission: {requiredPermission}</span>
-                    </div>
-                </div>
-            );
-        }
-
-        if (requiredRole && !hasRole(requiredRole)) {
-            return (
-                <div className="flex items-center justify-center min-h-screen">
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                        <strong className="font-bold">Role Required!</strong>
-                        <span className="block sm:inline"> You must have the role: {requiredRole}</span>
-                    </div>
-                </div>
-            );
-        }
-
-        return <Component {...props} />;
-    };
-};
-
-// Permission-based component wrapper
-export const PermissionGate = ({ 
-    children, 
-    permission = null, 
-    role = null, 
-    fallback = null, 
-    adminOnly = false 
-}) => {
-    const { user, hasPermission, hasRole, isAdmin } = useAuth();
-
-    if (!user) {
-        return fallback || null;
-    }
-
-    if (adminOnly && !isAdmin()) {
-        return fallback || null;
-    }
-
-    if (permission && !hasPermission(permission)) {
-        return fallback || null;
-    }
-
-    if (role && !hasRole(role)) {
-        return fallback || null;
-    }
-
-    return children;
 };
 
 export default AuthContext;

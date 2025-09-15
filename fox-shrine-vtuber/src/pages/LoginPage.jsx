@@ -96,7 +96,7 @@ const LoginPage = () => {
                         </div>
 
                         {/* Permissions */}
-                        {user.permissions && user.permissions.length > 0 && (
+                        {!!user.permissions && user.permissions.length > 0 && (
                             <div className="bg-white rounded-lg shadow-md p-6">
                                 <h3 className="font-semibold text-gray-900 mb-4">Your Permissions</h3>
                                 <div className="space-y-2 max-h-48 overflow-y-auto">

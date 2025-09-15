@@ -84,7 +84,6 @@ const getDefaultConfig = () => {
 // Configuration Provider Component
 export const ConfigProvider = ({ children }) => {
   const [config, setConfig] = useState(getDefaultConfig);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // Save to localStorage whenever config changes
@@ -168,7 +167,6 @@ export const ConfigProvider = ({ children }) => {
 
   const contextValue = {
     config,
-    loading,
     error,
     updateConfig,
     updateMultipleConfig,
