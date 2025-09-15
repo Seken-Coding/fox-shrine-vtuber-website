@@ -31,3 +31,16 @@ fox-shrine-vtuber/node_modules/
 # Note: node_modules and .env are already covered by the general rules above
 /api/logs/
 /api/dist/
+
+# Dependencies
+/node_modules
+
+# Production
+/build
+
+# Miscellaneous
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
