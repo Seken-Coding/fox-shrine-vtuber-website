@@ -25,6 +25,7 @@ yarn-error.log*
 # Frontend: React App (in fox-shrine-vtuber/)
 fox-shrine-vtuber/build/
 fox-shrine-vtuber/coverage/
+fox-shrine-vtuber/node_modules/
 
 # Backend: API (in api/)
 # Note: node_modules and .env are already covered by the general rules above
