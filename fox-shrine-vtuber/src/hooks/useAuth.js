@@ -4,7 +4,9 @@ import { createContext, useContext, useState, useEffect, useMemo, useCallback } 
 const AuthContext = createContext(null);
 
 // API Base URL
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3002/api';
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? 'https://fox-shrine-vtuber-website.onrender.com/api'
+  : 'http://localhost:3002/api';
 
 // Authentication Provider Component
 export const AuthProvider = ({ children }) => {
@@ -209,6 +211,20 @@ export const useAuth = () => {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;
+};
+
+export const PermissionGate = ({ permission, children, showMessage = false }) => {
+    const { hasPermission } = useAuth();
+
+    if (hasPermission(permission)) {
+        return <>{children}</>;
+    }
+
+    if (showMessage) {
+        return <p>You do not have permission to view this section.</p>;
+    }
+
+    return null;
 };
 
 export default AuthContext;

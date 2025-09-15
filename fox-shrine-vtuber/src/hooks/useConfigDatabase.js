@@ -104,7 +104,9 @@ export const ConfigProvider = ({ children }) => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const { apiCall } = useAuth(); // Keep this to use the authenticated apiCall for updates
 
-  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3002/api';
+  const API_BASE_URL = process.env.NODE_ENV === 'production'
+    ? 'https://fox-shrine-vtuber-website.onrender.com/api'
+    : 'http://localhost:3002/api';
 
   // Network status monitoring
   useEffect(() => {

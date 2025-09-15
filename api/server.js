@@ -22,6 +22,7 @@ app.use(helmet({
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
             imgSrc: ["'self'", "data:", "https:"],
             scriptSrc: ["'self'"],
+            connectSrc: ["'self'", "https://fox-shrine-vtuber-website.onrender.com", "https://fox-shrine-vtuber-website.vercel.app"],
         },
     },
 }));
@@ -46,7 +47,8 @@ const corsOptions = {
         'http://localhost:3000',
         'http://localhost:3001',
         'https://foxshrinevtuber.com',
-        'https://www.foxshrinevtuber.com'
+        'https://www.foxshrinevtuber.com',
+        'https://fox-shrine-vtuber-website.vercel.app'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
@@ -923,29 +925,21 @@ app.delete('/api/config/:key', authenticateToken, requirePermission('config.dele
         if (result.recordset.length === 0) {
             return res.status(404).json({
                 success: false,
-                error: 'Configuration not found',
-                timestamp: new Date().toISOString()
+                error: 'Configuration not found'
             });
         }
         
-        // Log user activity
-        const pool2 = await poolPromise;
-        await pool2.request()
-            .input('UserId', sql.Int, req.user.id)
-            .input('Action', sql.NVarChar(100), 'CONFIG_DELETE')
-            .input('Details', sql.NVarChar(sql.MAX), `Deleted configuration key: ${key}`)
-            .input('IPAddress', sql.NVarChar(45), req.ip)
-            .input('UserAgent', sql.NVarChar(500), req.get('User-Agent') || '')
-            .execute('LogUserActivity');
+        // Log the audit trail
+        await logAuditTrail(req, 'DELETE_CONFIG', `Deleted ${result.recordset[0].Key}`);
         
         res.json({
             success: true,
-            data: result.recordset[0],
             message: 'Configuration deleted successfully',
+            data: result.recordset[0],
             timestamp: new Date().toISOString()
         });
     } catch (error) {
-        console.error('Config delete error:', error);
+        console.error('Delete config error:', error);
         res.status(500).json({
             success: false,
             error: 'Failed to delete configuration',
@@ -955,203 +949,108 @@ app.delete('/api/config/:key', authenticateToken, requirePermission('config.dele
     }
 });
 
-// Get configuration audit trail
-app.get('/api/config/audit/:key?', async (req, res) => {
+// =============================================
+// ACTIVITY LOGGING ENDPOINTS (Admin Only)
+// =============================================
+
+// Get user activity logs (Admin only)
+app.get('/api/admin/logs/users', authenticateToken, requirePermission('logs.read'), async (req, res) => {
     try {
-        const { key } = req.params;
-        const { days = 30 } = req.query;
-        
+        const { userId } = req.query;
+
         const pool = await poolPromise;
-        const result = await pool.request()
-            .input('ConfigurationKey', sql.NVarChar(100), key || null)
-            .input('Days', sql.Int, parseInt(days))
-            .execute('GetConfigurationAudit');
+        let query = `
+            SELECT a.Id, a.Action, a.Details, a.Timestamp, a.IPAddress, a.UserAgent,
+                   u.Username, u.Email, u.DisplayName
+            FROM ActivityLogs a
+            INNER JOIN Users u ON a.UserId = u.Id
+            WHERE 1=1
+        `;
         
+        const request = pool.request();
+
+        if (userId) {
+            query += ` AND a.UserId = @UserId`;
+            request.input('UserId', sql.Int, userId);
+        }
+
+        query += ` ORDER BY a.Timestamp DESC`;
+        
+        const result = await request.query(query);
+
         res.json({
             success: true,
-            data: result.recordset,
-            key: key,
-            days: parseInt(days),
-            timestamp: new Date().toISOString(),
-            count: result.recordset.length
+            logs: result.recordset
         });
+
     } catch (error) {
-        console.error('Config audit fetch error:', error);
+        console.error('Get logs error:', error);
         res.status(500).json({
             success: false,
-            error: 'Failed to fetch configuration audit',
-            message: error.message,
-            timestamp: new Date().toISOString()
+            error: 'Failed to get logs'
         });
     }
 });
 
-// Stream status endpoints
-app.get('/api/stream/status', async (req, res) => {
+// Get system activity logs (Admin only)
+app.get('/api/admin/logs/system', authenticateToken, requirePermission('logs.read'), async (req, res) => {
     try {
         const pool = await poolPromise;
-        const result = await pool.request()
-            .input('Category', sql.NVarChar(50), 'stream')
-            .execute('GetConfigurationByCategory');
-        
-        const streamData = {};
-        result.recordset.forEach(row => {
-            streamData[row.Key] = row.Value;
-        });
-        
+        const result = await pool.request().execute('GetSystemActivityLogs');
+
         res.json({
             success: true,
-            data: {
-                isLive: streamData.isLive === 'true',
-                title: streamData.streamTitle,
-                category: streamData.streamCategory,
-                nextStream: streamData.nextStreamDate,
-                notification: streamData.streamNotification
-            },
-            timestamp: new Date().toISOString()
+            logs: result.recordset
         });
+
     } catch (error) {
-        console.error('Stream status fetch error:', error);
+        console.error('Get system logs error:', error);
         res.status(500).json({
             success: false,
-            error: 'Failed to fetch stream status',
-            message: error.message,
-            timestamp: new Date().toISOString()
+            error: 'Failed to get system logs'
         });
     }
 });
 
-// Update stream status
-app.put('/api/stream/status', async (req, res) => {
-    try {
-        const { isLive, title, category, nextStream, notification } = req.body;
-        const pool = await poolPromise;
-        
-        const updates = [];
-        if (typeof isLive === 'boolean') {
-            updates.push({ key: 'isLive', value: isLive.toString() });
-        }
-        if (title) {
-            updates.push({ key: 'streamTitle', value: title });
-        }
-        if (category) {
-            updates.push({ key: 'streamCategory', value: category });
-        }
-        if (nextStream) {
-            updates.push({ key: 'nextStreamDate', value: nextStream });
-        }
-        if (notification) {
-            updates.push({ key: 'streamNotification', value: notification });
-        }
-        
-        const results = [];
-        for (const update of updates) {
-            const result = await pool.request()
-                .input('Key', sql.NVarChar(100), update.key)
-                .input('Value', sql.NVarChar(sql.MAX), update.value)
-                .input('Category', sql.NVarChar(50), 'stream')
-                .input('UpdatedBy', sql.NVarChar(100), req.ip || 'api')
-                .execute('UpsertConfiguration');
-            
-            results.push(result.recordset[0]);
-        }
-        
-        // Log the audit trail
-        await logAuditTrail(req, 'UPDATE_STREAM_STATUS', `Updated stream status`);
-        
-        res.json({
-            success: true,
-            data: results,
-            message: 'Stream status updated successfully',
-            timestamp: new Date().toISOString()
-        });
-    } catch (error) {
-        console.error('Stream status update error:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to update stream status',
-            message: error.message,
-            timestamp: new Date().toISOString()
-        });
-    }
-});
+// =============================================
+// MISCELLANEOUS ENDPOINTS
+// =============================================
 
-// Helper function for audit logging
-async function logAuditTrail(req, action, details) {
-    try {
-        const pool = await poolPromise;
-        await pool.request()
-            .input('Action', sql.NVarChar(20), action)
-            .input('Details', sql.NVarChar(500), details)
-            .input('IPAddress', sql.NVarChar(45), req.ip)
-            .input('UserAgent', sql.NVarChar(500), req.get('User-Agent'))
-            .query(`
-                INSERT INTO ConfigurationAudit (Action, NewValue, ChangedBy, IPAddress, UserAgent)
-                VALUES (@Action, @Details, @IPAddress, @IPAddress, @UserAgent)
-            `);
-    } catch (error) {
-        console.error('Audit logging error:', error);
-        // Don't throw error for audit logging failures
-    }
-}
-
-// Error handling middleware
-app.use((error, req, res, next) => {
-    console.error('Unhandled error:', error);
-    res.status(500).json({
-        success: false,
-        error: 'Internal server error',
-        message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong',
+// Test endpoint
+app.get('/api/test', async (req, res) => {
+    res.json({
+        success: true,
+        message: 'API is working',
         timestamp: new Date().toISOString()
     });
 });
 
 // 404 handler
-app.use('*', (req, res) => {
+app.use((req, res) => {
     res.status(404).json({
         success: false,
-        error: 'Endpoint not found',
-        path: req.originalUrl,
+        error: 'Not found',
         timestamp: new Date().toISOString()
     });
 });
 
-// Graceful shutdown
-process.on('SIGINT', async () => {
-    console.log('🔄 Shutting down gracefully...');
-    try {
-        if (poolPromise) {
-            await poolPromise.close();
-            console.log('✅ Database connection closed');
-        }
-        process.exit(0);
-    } catch (error) {
-        console.error('❌ Error during shutdown:', error);
-        process.exit(1);
-    }
+// Global error handler
+app.use((err, req, res, next) => {
+    console.error('Global error handler:', err);
+    
+    res.status(err.statusCode || 500).json({
+        success: false,
+        error: err.message || 'Internal server error',
+        timestamp: new Date().toISOString()
+    });
 });
 
-// Start server
-const startServer = async () => {
-    try {
-        // Initialize database connection
-        await initializeDatabase();
-        
-        // Start the server
-        app.listen(PORT, () => {
-            console.log('🦊 Fox Shrine VTuber API Server Started!');
-            console.log(`📡 Server running on port ${PORT}`);
-            console.log(`🌐 Health check: http://localhost:${PORT}/api/health`);
-            console.log(`⚙️  Configuration API: http://localhost:${PORT}/api/config`);
-            console.log(`📺 Stream API: http://localhost:${PORT}/api/stream/status`);
-            console.log(`🔍 Environment: ${process.env.NODE_ENV || 'development'}`);
-            console.log('=====================================');
-        });
-    } catch (error) {
-        console.error('❌ Failed to start server:', error);
-        process.exit(1);
-    }
-};
-
 // Start the server
-startServer();
+app.listen(PORT, () => {
+    console.log(`🚀 Server is running on http://localhost:${PORT}`);
+});
+
+// Initialize database connection
+initializeDatabase()
+    .then(() => console.log('✅ Database initialized'))
+    .catch(err => console.error('❌ Database initialization failed:', err.message));

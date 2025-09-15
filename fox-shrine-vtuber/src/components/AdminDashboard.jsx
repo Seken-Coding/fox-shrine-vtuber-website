@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth, PermissionGate } from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
+import { PermissionGate } from '../hooks/useAuth';
 
 const AdminDashboard = () => {
     const { user, apiCall, hasPermission } = useAuth();
