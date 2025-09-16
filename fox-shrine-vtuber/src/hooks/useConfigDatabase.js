@@ -1,25 +1,67 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from './useAuth';
 
-// Create Context
+/**
+ * @fileoverview Database-backed configuration management hook with real-time updates
+ * @author Fox Shrine Development Team
+ * @version 1.0.0
+ */
+
+// Create Configuration Context
 const ConfigContext = createContext();
 
+/**
+ * Custom hook to access database configuration context
+ * Must be used within a ConfigProvider component
+ * 
+ * @returns {Object} Configuration context containing state and methods
+ * @throws {Error} If used outside of ConfigProvider
+ * 
+ * @example
+ * const { config, updateConfig, loading, error } = useConfig();
+ * 
+ * // Access configuration values
+ * console.log(config.siteTitle);
+ * console.log(config.theme.primaryColor);
+ * 
+ * // Update configuration
+ * await updateConfig('theme.primaryColor', '#FF0000');
+ */
 export const useConfig = () => useContext(ConfigContext);
 
-// Default configuration fallback
+/**
+ * Default configuration fallback object
+ * Used when database is unavailable or for new installations
+ */
 const defaultConfig = {
+  /** @type {string} Site title displayed in browser and headers */
   siteTitle: 'Fox Shrine VTuber',
+  
+  /** @type {string} Site description for SEO and meta tags */
   siteDescription: 'Join the Fox Shrine for games, laughs, and shrine fox adventures!',
+  
+  /** @type {string} Path to site logo image */
   siteLogo: '/images/fox-shrine-logo.png',
+  
+  /** @type {string} Canonical site URL */
   siteUrl: 'https://foxshrinevtuber.com',
   
+  /** @type {Object} VTuber character information */
   character: {
+    /** @type {string} Character name */
     name: 'Fox Shrine Guardian',
+    
+    /** @type {string} Character description/bio */
     description: 'A mischievous fox spirit who guards an ancient shrine and streams for fun!',
+    
+    /** @type {string} Path to character image */
     image: '/images/fox-character.png',
+    
+    /** @type {string} Character greeting message */
     greeting: 'Welcome to my shrine, fellow foxes! 🦊'
   },
   
+  /** @type {Object} Social media platform URLs */
   social: {
     twitchUrl: 'https://twitch.tv/foxshrinevtuber',
     youtubeUrl: 'https://youtube.com/@foxshrinevtuber',
@@ -28,6 +70,7 @@ const defaultConfig = {
     instagramUrl: 'https://instagram.com/foxshrinevtuber'
   },
   
+  /** @type {Object} Live streaming configuration */
   stream: {
     title: 'Fox Friday Funtime!',
     category: 'Just Chatting',
@@ -36,6 +79,7 @@ const defaultConfig = {
     notification: 'Join me tonight for some cozy games! 🎮'
   },
   
+  /** @type {Object} Visual theme configuration */
   theme: {
     primaryColor: '#C41E3A',
     secondaryColor: '#FF9500',
@@ -44,6 +88,7 @@ const defaultConfig = {
     fontFamily: 'Cinzel, serif'
   },
   
+  /** @type {Object} Feature toggle configuration */
   features: {
     showMerch: true,
     showDonations: true,
@@ -52,18 +97,21 @@ const defaultConfig = {
     enableNotifications: true
   },
   
+  /** @type {Object} Site content and messaging */
   content: {
     heroTitle: 'Welcome to the Fox Shrine',
     heroSubtitle: 'Join me on a magical journey filled with laughter, games, and shrine fox mischief!',
     aboutText: 'Legend has it that I was once a regular fox who stumbled upon an abandoned shrine deep in the mystical forest.'
   },
   
+  /** @type {Object} Contact information */
   contact: {
     businessEmail: 'business@foxshrinevtuber.com',
     fanEmail: 'fanart@foxshrinevtuber.com',
     supportEmail: 'support@foxshrinevtuber.com'
   },
   
+  /** @type {Object} System-level settings */
   system: {
     maintenanceMode: false,
     maintenanceMessage: 'The shrine is currently under magical maintenance! Please check back soon! 🦊✨',
@@ -71,10 +119,25 @@ const defaultConfig = {
   }
 };
 
+/**
+ * Utility function to check if a value is a plain object
+ * Used for deep merging configuration objects
+ * 
+ * @param {any} item - Value to check
+ * @returns {boolean} True if item is a plain object (not array or null)
+ */
 const isObject = (item) => {
   return item && typeof item === 'object' && !Array.isArray(item);
 };
 
+/**
+ * Deep merge two objects, combining nested properties
+ * Used to merge default configuration with database configuration
+ * 
+ * @param {Object} target - Target object to merge into
+ * @param {Object} source - Source object to merge from
+ * @returns {Object} Merged object with combined properties
+ */
 const mergeDeep = (target, source) => {
   const output = { ...target };
   
@@ -95,15 +158,34 @@ const mergeDeep = (target, source) => {
   return output;
 };
 
-// Configuration Provider Component
+/**
+ * Configuration Provider Component with Database Persistence
+ * Manages configuration state with real-time database synchronization and offline fallback
+ * 
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components to wrap with config context
+ * @returns {JSX.Element} ConfigContext.Provider with configuration state and methods
+ */
 export const ConfigProvider = ({ children }) => {
+  /** @type {[Object, Function]} Current configuration state */
   const [config, setConfig] = useState(defaultConfig);
+  
+  /** @type {[boolean, Function]} Configuration loading state */
   const [loading, setLoading] = useState(true);
+  
+  /** @type {[string|null, Function]} Configuration error state */
   const [error, setError] = useState(null);
+  
+  /** @type {[Date|null, Function]} Last successful database sync timestamp */
   const [lastSync, setLastSync] = useState(null);
+  
+  /** @type {[boolean, Function]} Network connectivity status */
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  
+  /** Authentication hook for making authenticated API calls */
   const { apiCall } = useAuth(); // Keep this to use the authenticated apiCall for updates
 
+  /** API base URL based on environment */
   const API_BASE_URL = process.env.NODE_ENV === 'production'
     ? 'https://fox-shrine-vtuber-website.onrender.com/api'
     : 'http://localhost:3002/api';
@@ -122,7 +204,13 @@ export const ConfigProvider = ({ children }) => {
     };
   }, []);
 
-  // Load configuration from API
+  /**
+   * Loads configuration from database with error handling and fallback
+   * Attempts to fetch configuration from API, falls back to localStorage if unavailable
+   * 
+   * @returns {Promise<Object>} Configuration object from database or cache
+   * @throws {Error} When both database and cache are unavailable
+   */
   const loadConfigFromDatabase = useCallback(async () => {
     try {
       setError(null);
@@ -132,7 +220,7 @@ export const ConfigProvider = ({ children }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        // Add timeout
+        // Add timeout to prevent hanging requests
         signal: AbortSignal.timeout(10000)
       });
 
@@ -160,7 +248,7 @@ export const ConfigProvider = ({ children }) => {
     } catch (error) {
       console.error('❌ Failed to load configuration from database:', error);
 
-      // Try to load from localStorage
+      // Try to load from localStorage as fallback
       const cachedConfig = localStorage.getItem('foxshrine_config');
       if (cachedConfig) {
         console.log('🔄 Using cached configuration as fallback');
@@ -176,12 +264,25 @@ export const ConfigProvider = ({ children }) => {
     }
   }, [API_BASE_URL]);
 
-  // Update configuration in database
+  /**
+   * Updates configuration in database with optimistic updates and rollback
+   * Immediately updates local state, then syncs with database
+   * 
+   * @param {string} key - Configuration key with dot notation (e.g., 'theme.primaryColor')
+   * @param {any} value - New value to set
+   * @param {string} [category='general'] - Configuration category for organization
+   * @returns {Promise<Object>} Updated configuration data from server
+   * @throws {Error} When update fails or user lacks permissions
+   * 
+   * @example
+   * await updateConfig('theme.primaryColor', '#FF0000', 'theme');
+   * await updateConfig('social.twitchUrl', 'https://twitch.tv/newchannel', 'social');
+   */
   const updateConfig = useCallback(async (key, value, category = 'general') => {
     try {
       setError(null);
       
-      // Optimistic update
+      // Optimistic update - immediately update local state
       const keyPath = key.split('.');
       const newConfig = { ...config };
       let current = newConfig;
@@ -195,7 +296,7 @@ export const ConfigProvider = ({ children }) => {
       current[keyPath[keyPath.length - 1]] = value;
       setConfig(newConfig);
 
-      // Send to API
+      // Send update to API server
       const response = await apiCall(`${API_BASE_URL}/config/${key}`, 'PUT', {
         value,
         category
@@ -217,7 +318,7 @@ export const ConfigProvider = ({ children }) => {
 
       console.log(`✅ Configuration updated: ${key} = ${value}`);
       
-      // Update localStorage
+      // Update localStorage backup
       localStorage.setItem('foxshrine_config', JSON.stringify(newConfig));
       localStorage.setItem('foxshrine_config_timestamp', new Date().toISOString());
       
@@ -227,7 +328,7 @@ export const ConfigProvider = ({ children }) => {
       console.error('❌ Failed to update configuration:', error);
       setError(error.message);
       
-      // Revert optimistic update
+      // Revert optimistic update on error
       setConfig(config);
       throw error;
     }
