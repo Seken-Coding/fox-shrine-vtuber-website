@@ -7,27 +7,29 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'shrine-red': '#C41E3A',
-        'fox-orange': '#FF9500',
-        'shrine-teal': '#5FB4A2',
-        'shrine-white': '#F5F1E8',
-        'shrine-dark': '#333333',
-        'shrine-gold': '#FFD700',
+        'shrine-red': '#8C1C13',
+        'fox-orange': '#D96704',
+        'shrine-gold': '#F2A71B',
+        'shrine-white': '#F2F2F2',
+        'shrine-dark': '#262626',
       },
       fontFamily: {
         'cinzel': ['Cinzel', 'serif'],
         'nunito': ['Nunito', 'sans-serif'],
-        'satisfy': ['Satisfy', 'cursive'],
       },
       animation: {
-        'float': 'float 6s ease-in-out infinite',
-        'spin-slow': 'spin 8s linear infinite',
-        'bounce-slow': 'bounce 3s infinite',
+        'fade-in-down': 'fade-in-down 0.5s ease-out'
       },
       keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' },
+        'fade-in-down': {
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(-10px)'
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'translateY(0)'
+          },
         }
       },
       backgroundImage: {

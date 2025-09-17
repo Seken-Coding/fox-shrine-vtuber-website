@@ -7,17 +7,14 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
-import SetupPage from './pages/SetupPage';
 import LoginPage from './pages/LoginPage';
 import AdminDashboard from './components/AdminDashboard';
 import ScrollToTop from './components/ScrollToTop';
+import NotFoundPage from './pages/NotFoundPage'; // Import the new NotFoundPage
+import SchedulePage from './pages/SchedulePage';
 
 // Import other pages as they're created
-// import SchedulePage from './pages/SchedulePage';
 // import ContentPage from './pages/ContentPage';
-// import MerchPage from './pages/MerchPage';
-// import GalleryPage from './pages/GalleryPage';
-// import ConnectPage from './pages/ConnectPage';
 
 function App() {
   return (
@@ -37,25 +34,23 @@ function App() {
             {/* Admin Dashboard - Protected Route */}
             <Route path="/admin" element={<AdminDashboard />} />
             {/* Development Only - Setup Page */}
-            {process.env.NODE_ENV === 'development' && (
-              <Route path="/setup" element={<SetupPage />} />
-            )}
-          {/* <Route path="/schedule" element={<SchedulePage />} /> */}
-          {/* <Route path="/content" element={<ContentPage />} /> */}
-          {/* <Route path="/merch" element={<MerchPage />} /> */}
-          {/* <Route path="/gallery" element={<GalleryPage />} /> */}
-          {/* <Route path="/connect" element={<ConnectPage />} /> */}
-          
-          {/* 404 Page */}
-          <Route path="*" element={
-            <div className="min-h-screen flex items-center justify-center">
-              <div className="text-center">
-                <h1 className="font-cinzel text-4xl text-shrine-red mb-4">Page Not Found</h1>
-                <p className="mb-8">Oops! Looks like our fox has hidden this page!</p>
-                <a href="/" className="fox-button">Return to Shrine</a>
+            
+            <Route path="/schedule" element={<SchedulePage />} />
+            {/* <Route path="/content" element={<ContentPage />} /> */}
+            {/* <Route path="/merch" element={<MerchPage />} /> */}
+            {/* <Route path="/gallery" element={<GalleryPage />} /> */}
+            {/* <Route path="/connect" element={<ConnectPage />} /> */}
+            
+            {/* 404 Page */}
+            <Route path="*" element={
+              <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="font-cinzel text-4xl text-shrine-red mb-4">Page Not Found</h1>
+                  <p className="mb-8">Oops! Looks like our fox has hidden this page!</p>
+                  <a href="/" className="fox-button">Return to Shrine</a>
+                </div>
               </div>
-            </div>
-          } />
+            } />
           </Routes>
         </main>
         <Footer />
