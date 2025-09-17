@@ -10,11 +10,12 @@ import AboutPage from './pages/AboutPage';
 import LoginPage from './pages/LoginPage';
 import AdminDashboard from './components/AdminDashboard';
 import ScrollToTop from './components/ScrollToTop';
-import NotFoundPage from './pages/NotFoundPage'; // Import the new NotFoundPage
+import NotFoundPage from './pages/NotFoundPage';
 import SchedulePage from './pages/SchedulePage';
-
-// Import other pages as they're created
-// import ContentPage from './pages/ContentPage';
+import ContentPage from './pages/ContentPage';
+import MerchPage from './pages/MerchPage';
+import GalleryPage from './pages/GalleryPage';
+import ContactPage from './pages/ContactPage';
 
 function App() {
   return (
@@ -36,10 +37,10 @@ function App() {
             {/* Development Only - Setup Page */}
             
             <Route path="/schedule" element={<SchedulePage />} />
-            {/* <Route path="/content" element={<ContentPage />} /> */}
-            {/* <Route path="/merch" element={<MerchPage />} /> */}
-            {/* <Route path="/gallery" element={<GalleryPage />} /> */}
-            {/* <Route path="/connect" element={<ConnectPage />} /> */}
+            <Route path="/content" element={<ContentPage />} />
+            <Route path="/merch" element={<MerchPage />} />
+            <Route path="/gallery" element={<GalleryPage />} />
+            <Route path="/connect" element={<ContactPage />} />
             
             {/* 404 Page */}
             <Route path="*" element={
