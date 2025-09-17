@@ -1,9 +1,9 @@
 import React from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { AuthProvider, useAuth } from './useAuth';
+import { AuthProvider, useAuth } from './useAuth.jsx';
 
 // Mock the useConfig hook, as useAuth depends on it indirectly via AuthProvider
-jest.mock('./useConfigDatabase', () => ({
+jest.mock('./useConfigDatabase.jsx', () => ({
   useConfig: () => ({
     config: {
       system: {
