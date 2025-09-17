@@ -10,9 +10,9 @@ const HomePage = () => {
       <HeroSection />
       
       {/* Latest stream embed */}
-      <section className="py-16 bg-shrine-dark">
+      <section className="py-16 bg-shrine-dark dark:bg-gray-800">
         <div className="container mx-auto px-4">
-          <h2 className="section-title text-white text-center">Latest Stream</h2>
+          <h2 className="section-title text-white dark:text-dark-text text-center">Latest Stream</h2>
           <div className="mt-8 max-w-4xl mx-auto">
             <div className="aspect-w-16 relative" style={{ paddingBottom: '56.25%' }}>
               <iframe 
@@ -33,10 +33,10 @@ const HomePage = () => {
       <MerchShowcase />
       
       {/* Community Section */}
-      <section className="py-16 bg-shrine-teal/10">
+      <section className="py-16 bg-shrine-teal/10 dark:bg-dark-bg">
         <div className="container mx-auto px-4">
-          <h2 className="section-title text-center">Join Our Community</h2>
-          <p className="text-center max-w-xl mx-auto mb-12">Become part of our fox den family! Connect with fellow fans and never miss updates.</p>
+          <h2 className="section-title text-center dark:text-dark-text">Join Our Community</h2>
+          <p className="text-center max-w-xl mx-auto mb-12 dark:text-dark-text-secondary">Become part of our fox den family! Connect with fellow fans and never miss updates.</p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <a 

@@ -67,7 +67,7 @@ const SchedulePage = () => {
         title="Stream Schedule - Fox Shrine"
         description="Find out when the next live stream is happening and join the fox den!"
       />
-      <div className="bg-shrine-white py-24 px-4">
+      <div className="bg-shrine-white dark:bg-dark-bg py-24 px-4">
         <div className="container mx-auto">
           
           {/* Header */}
@@ -77,14 +77,14 @@ const SchedulePage = () => {
             transition={{ duration: 0.5 }}
             className="text-center mb-12"
           >
-            <h1 className="font-cinzel text-5xl md:text-6xl font-bold text-shrine-red">Stream Schedule</h1>
-            <p className="text-shrine-dark text-lg mt-2">Offerings of entertainment for the week. All times are in your local timezone!</p>
+            <h1 className="font-cinzel text-5xl md:text-6xl font-bold text-shrine-red dark:text-dark-shrine-red">Stream Schedule</h1>
+            <p className="text-shrine-dark dark:text-dark-text-secondary text-lg mt-2">Offerings of entertainment for the week. All times are in your local timezone!</p>
           </motion.div>
 
           {/* Timezone Selector */}
           <div className="flex justify-center mb-12">
-            <div className="flex items-center bg-white p-2 rounded-full shadow-md">
-              <FaClock className="text-shrine-dark mx-2" />
+            <div className="flex items-center bg-white dark:bg-dark-card p-2 rounded-full shadow-md">
+              <FaClock className="text-shrine-dark dark:text-dark-text mx-2" />
               <select 
                 value={timeZone} 
                 onChange={(e) => setTimeZone(e.target.value)}
@@ -109,23 +109,23 @@ const SchedulePage = () => {
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className={`rounded-lg shadow-lg p-6 flex flex-col text-center transition-all duration-300 ${item.time ? 'bg-white border-t-4 border-fox-orange' : 'bg-gray-100 border-t-4 border-gray-300'}`}
+                className={`rounded-lg shadow-lg p-6 flex flex-col text-center transition-all duration-300 ${item.time ? 'bg-white dark:bg-dark-card border-t-4 border-fox-orange dark:border-dark-fox-orange' : 'bg-gray-100 dark:bg-gray-800 border-t-4 border-gray-300 dark:border-gray-600'}`}
               >
-                <h3 className="font-cinzel text-2xl font-bold text-shrine-dark mb-4">{item.day}</h3>
+                <h3 className="font-cinzel text-2xl font-bold text-shrine-dark dark:text-dark-text mb-4">{item.day}</h3>
                 {item.time ? (
                   <>
-                    <div className="text-3xl font-bold text-shrine-red mb-4">
+                    <div className="text-3xl font-bold text-shrine-red dark:text-dark-shrine-red mb-4">
                       {item.localTime}
                     </div>
-                    <div className="flex items-center justify-center text-lg text-shrine-dark mb-2">
+                    <div className="flex items-center justify-center text-lg text-shrine-dark dark:text-dark-text mb-2">
                       {getIconForGame(item.game)}
                       <span>{item.game}</span>
                     </div>
-                    <p className="text-gray-500 flex-grow">{item.title}</p>
+                    <p className="text-gray-500 dark:text-dark-text-secondary flex-grow">{item.title}</p>
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center flex-grow my-4">
-                    <FaRegMoon className="text-4xl text-gray-400 mb-2" />
+                    <FaRegMoon className="text-4xl text-gray-400 dark:text-gray-500 mb-2" />
                     <p className="text-gray-500 font-semibold">{item.title}</p>
                   </div>
                 )}

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { ConfigProvider } from './hooks/useConfigDatabase';
 import { AuthProvider } from './hooks/useAuth';
+import { ThemeProvider } from './contexts/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
@@ -20,12 +21,14 @@ import ContactPage from './pages/ContactPage';
 function App() {
   return (
     <HelmetProvider>
-      <AuthProvider>
-        <ConfigProvider>
-          <Router>
-            <ScrollToTop />
-            <Navbar />
-            <main>
+      <ThemeProvider>
+        <AuthProvider>
+          <ConfigProvider>
+            <Router>
+              <ScrollToTop />
+              <div className="min-h-screen bg-white dark:bg-dark-bg text-gray-900 dark:text-dark-text transition-colors duration-300">
+                <Navbar />
+                <main>
           <Routes>
             <Route path="/" element={<HomePage />} />
             {/* Add other routes as pages are created */}
@@ -54,10 +57,12 @@ function App() {
             } />
           </Routes>
         </main>
-        <Footer />
-      </Router>
-        </ConfigProvider>
-      </AuthProvider>
+                <Footer />
+              </div>
+            </Router>
+          </ConfigProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </HelmetProvider>
   );
 }

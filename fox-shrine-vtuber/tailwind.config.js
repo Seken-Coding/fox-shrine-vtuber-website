@@ -4,6 +4,7 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",
     "./public/index.html",
   ],
+  darkMode: 'class', // Enable class-based dark mode
   theme: {
     extend: {
       colors: {
@@ -12,6 +13,15 @@ module.exports = {
         'shrine-gold': '#F2A71B',
         'shrine-white': '#F2F2F2',
         'shrine-dark': '#262626',
+        // Dark mode specific colors
+        'dark-bg': '#0F0F0F',
+        'dark-card': '#1A1A1A',
+        'dark-border': '#2D2D2D',
+        'dark-text': '#E5E5E5',
+        'dark-text-secondary': '#B3B3B3',
+        'dark-shrine-red': '#B23A2F',
+        'dark-fox-orange': '#FF8A3D',
+        'dark-shrine-gold': '#FFD700',
       },
       fontFamily: {
         'cinzel': ['Cinzel', 'serif'],

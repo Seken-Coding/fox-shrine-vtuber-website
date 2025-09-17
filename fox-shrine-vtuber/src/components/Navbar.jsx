@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { LogoPlaceholder } from './PlaceholderImages';
 import { useAuth } from '../hooks/useAuth';
 import AuthModal from './AuthModal';
+import DarkModeToggle from './DarkModeToggle';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +27,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-shrine-white shadow-lg py-2' : 'bg-transparent py-4'}`}>
+    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-shrine-white dark:bg-dark-card shadow-lg py-2' : 'bg-transparent py-4'}`}>
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
@@ -46,6 +47,9 @@ const Navbar = () => {
               <NavLink to="/connect">Connect</NavLink>
             </div>
             
+            {/* Theme Toggle */}
+            <DarkModeToggle />
+            
             {/* Authentication Section */}
             <div className="flex items-center space-x-4">
               {user ? (
@@ -57,7 +61,7 @@ const Navbar = () => {
                         {user.displayName?.[0] || user.username?.[0] || 'U'}
                       </span>
                     </div>
-                    <span className="text-sm text-shrine-dark">
+                    <span className="text-sm text-shrine-dark dark:text-dark-text">
                       {user.displayName || user.username}
                     </span>
                     <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">
@@ -78,7 +82,7 @@ const Navbar = () => {
                   {/* Logout Button */}
                   <button 
                     onClick={logout}
-                    className="text-sm text-shrine-dark hover:text-shrine-red transition-colors"
+                    className="text-sm text-shrine-dark dark:text-dark-text hover:text-shrine-red dark:hover:text-dark-shrine-red transition-colors"
                   >
                     Logout
                   </button>
@@ -90,7 +94,7 @@ const Navbar = () => {
                       setAuthMode('login');
                       setShowAuthModal(true);
                     }}
-                    className="text-sm text-shrine-dark hover:text-shrine-red transition-colors"
+                    className="text-sm text-shrine-dark dark:text-dark-text hover:text-shrine-red dark:hover:text-dark-shrine-red transition-colors"
                   >
                     Login
                   </button>
@@ -110,7 +114,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <button 
-            className="md:hidden text-shrine-dark focus:outline-none"
+            className="md:hidden text-shrine-dark dark:text-dark-text focus:outline-none"
             onClick={() => setIsOpen(!isOpen)}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -125,7 +129,7 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {!!isOpen && (
-          <div className="md:hidden mt-4 py-4 bg-shrine-white rounded-lg shadow-lg">
+          <div className="md:hidden mt-4 py-4 bg-shrine-white dark:bg-dark-card rounded-lg shadow-lg">
             <div className="flex flex-col space-y-3 px-4">
               <MobileNavLink to="/" onClick={() => setIsOpen(false)}>Home</MobileNavLink>
               <MobileNavLink to="/about" onClick={() => setIsOpen(false)}>About</MobileNavLink>
@@ -134,6 +138,12 @@ const Navbar = () => {
               <MobileNavLink to="/merch" onClick={() => setIsOpen(false)}>Merch</MobileNavLink>
               <MobileNavLink to="/gallery" onClick={() => setIsOpen(false)}>Gallery</MobileNavLink>
               <MobileNavLink to="/connect" onClick={() => setIsOpen(false)}>Connect</MobileNavLink>
+              
+              {/* Mobile Theme Toggle */}
+              <div className="flex items-center justify-between border-t border-gray-200 dark:border-dark-border pt-3 mt-3">
+                <span className="text-sm text-shrine-dark dark:text-dark-text">Dark Mode</span>
+                <DarkModeToggle />
+              </div>
               
               {/* Mobile Authentication */}
               <div className="border-t border-gray-200 pt-3 mt-3">
@@ -210,17 +220,17 @@ const Navbar = () => {
 const NavLink = ({ to, children }) => (
   <Link 
     to={to} 
-    className="font-cinzel text-shrine-dark hover:text-shrine-red transition-colors relative group"
+    className="font-cinzel text-shrine-dark dark:text-dark-text hover:text-shrine-red dark:hover:text-dark-shrine-red transition-colors relative group"
   >
     {children}
-    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-shrine-red transition-all duration-300 group-hover:w-full"></span>
+    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-shrine-red dark:bg-dark-shrine-red transition-all duration-300 group-hover:w-full"></span>
   </Link>
 );
 
 const MobileNavLink = ({ to, children, onClick }) => (
   <Link 
     to={to} 
-    className="font-cinzel text-shrine-dark hover:text-shrine-red transition-colors py-2"
+    className="font-cinzel text-shrine-dark dark:text-dark-text hover:text-shrine-red dark:hover:text-dark-shrine-red transition-colors py-2"
     onClick={onClick}
   >
     {children}

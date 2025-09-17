@@ -3,6 +3,12 @@ import PageTransition from '../components/PageTransition';
 import SEO from '../components/SEO';
 import LatestVideos from '../components/LatestVideos';
 import SocialShare from '../components/SocialShare';
+import { 
+  AnimatedSection, 
+  AnimatedContainer, 
+  ShrineCard, 
+  AnimatedPageHeader 
+} from '../components/AnimationComponents';
 
 const ContentPage = () => {
   return (
@@ -14,19 +20,16 @@ const ContentPage = () => {
       
       <div className="pt-24 pb-16">
         <div className="container mx-auto px-4">
-          <h1 className="font-cinzel text-4xl md:text-5xl text-center text-shrine-red mb-8">
-            Fox Shrine Content
-          </h1>
-          <p className="text-xl text-center mb-12 max-w-3xl mx-auto">
-            Dive into the mystical world of Fox Shrine! From epic gaming adventures to cozy chatting sessions, 
-            discover all the magical content created just for you.
-          </p>
+          <AnimatedPageHeader 
+            title="Fox Shrine Content"
+            description="Dive into the mystical world of Fox Shrine! From epic gaming adventures to cozy chatting sessions, discover all the magical content created just for you."
+          />
           
           {/* Featured Stream Section */}
-          <section className="mb-16">
-            <div className="shrine-card p-8">
+          <AnimatedSection className="mb-16">
+            <ShrineCard className="p-8">
               <h2 className="section-title mb-8">Featured Stream</h2>
-              <div className="aspect-video bg-gray-800 rounded-lg overflow-hidden">
+              <div className="aspect-video bg-gray-800 dark:bg-gray-900 rounded-lg overflow-hidden">
                 <iframe 
                   width="100%" 
                   height="100%" 
@@ -38,26 +41,26 @@ const ContentPage = () => {
                   className="w-full h-full"
                 ></iframe>
               </div>
-              <p className="mt-4 text-center">
+              <p className="mt-4 text-center dark:text-dark-text-secondary">
                 Latest magical adventure from the shrine! Don't forget to like and subscribe for more content.
               </p>
-            </div>
-          </section>
+            </ShrineCard>
+          </AnimatedSection>
 
           {/* Latest Videos Section */}
-          <section className="mb-16">
+          <AnimatedSection className="mb-16" delay={0.2}>
             <h2 className="section-title mb-12">Latest Videos & Streams</h2>
             <LatestVideos />
-          </section>
+          </AnimatedSection>
 
           {/* Content Categories */}
-          <section className="mb-16 bg-shrine-white p-8 rounded-lg shadow-lg">
+          <AnimatedSection className="mb-16 bg-shrine-white dark:bg-dark-card p-8 rounded-lg shadow-lg" delay={0.4}>
             <h2 className="section-title text-center mb-12">Content Categories</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="flex flex-col items-center text-center group hover:scale-105 transition-transform duration-300">
+            <AnimatedContainer className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <ShrineCard index={0} className="flex flex-col items-center text-center p-6 bg-white dark:bg-dark-card rounded-lg">
                 <div className="text-4xl mb-4">🎮</div>
-                <h3 className="font-cinzel text-xl mb-2 text-shrine-red">Gaming</h3>
-                <p className="mb-4">
+                <h3 className="font-cinzel text-xl mb-2 text-shrine-red dark:text-dark-shrine-red">Gaming</h3>
+                <p className="mb-4 dark:text-dark-text-secondary">
                   Epic gaming adventures across various titles - from indie gems to AAA blockbusters!
                 </p>
                 <div className="flex flex-wrap justify-center gap-2">
@@ -65,9 +68,9 @@ const ContentPage = () => {
                   <span className="px-3 py-1 bg-fox-orange/20 text-fox-orange rounded-full text-sm">Indie</span>
                   <span className="px-3 py-1 bg-shrine-teal/20 text-shrine-teal rounded-full text-sm">Horror</span>
                 </div>
-              </div>
+              </ShrineCard>
 
-              <div className="flex flex-col items-center text-center group hover:scale-105 transition-transform duration-300">
+              <ShrineCard index={1} className="flex flex-col items-center text-center p-6 bg-white rounded-lg">
                 <div className="text-4xl mb-4">💬</div>
                 <h3 className="font-cinzel text-xl mb-2 text-shrine-red">Chatting</h3>
                 <p className="mb-4">
@@ -78,9 +81,9 @@ const ContentPage = () => {
                   <span className="px-3 py-1 bg-fox-orange/20 text-fox-orange rounded-full text-sm">Stories</span>
                   <span className="px-3 py-1 bg-shrine-teal/20 text-shrine-teal rounded-full text-sm">Reviews</span>
                 </div>
-              </div>
+              </ShrineCard>
 
-              <div className="flex flex-col items-center text-center group hover:scale-105 transition-transform duration-300">
+              <ShrineCard index={2} className="flex flex-col items-center text-center p-6 bg-white rounded-lg">
                 <div className="text-4xl mb-4">🎨</div>
                 <h3 className="font-cinzel text-xl mb-2 text-shrine-red">Creative</h3>
                 <p className="mb-4">
@@ -91,18 +94,20 @@ const ContentPage = () => {
                   <span className="px-3 py-1 bg-fox-orange/20 text-fox-orange rounded-full text-sm">Music</span>
                   <span className="px-3 py-1 bg-shrine-teal/20 text-shrine-teal rounded-full text-sm">Crafts</span>
                 </div>
-              </div>
-            </div>
-          </section>
+              </ShrineCard>
+            </AnimatedContainer>
+          </AnimatedSection>
 
           {/* Social Share Section */}
-          <section className="shrine-card p-8 text-center">
-            <h2 className="section-title text-center mb-6">Share the Magic</h2>
-            <p className="mb-8">
-              Love our content? Share it with friends and spread the fox shrine magic!
-            </p>
-            <SocialShare />
-          </section>
+          <AnimatedSection delay={0.6}>
+            <ShrineCard className="p-8 text-center">
+              <h2 className="section-title text-center mb-6">Share the Magic</h2>
+              <p className="mb-8">
+                Love our content? Share it with friends and spread the fox shrine magic!
+              </p>
+              <SocialShare />
+            </ShrineCard>
+          </AnimatedSection>
         </div>
       </div>
     </PageTransition>
