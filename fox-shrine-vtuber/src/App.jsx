@@ -1,9 +1,8 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import { ConfigProvider } from './hooks/useConfigDatabase';
-import { AuthProvider } from './hooks/useAuth';
-import { ThemeProvider } from './contexts/ThemeContext';
+import { ConfigProvider } from './hooks/useConfigDatabase.jsx';
+import { AuthProvider } from './hooks/useAuth.jsx';
+import { ThemeProvider } from './contexts/ThemeContext.jsx';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';

@@ -1,12 +1,12 @@
 import React from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { ConfigProvider, useConfig } from './useConfigDatabase';
-import { AuthProvider } from './useAuth';
+import { ConfigProvider, useConfig } from './useConfigDatabase.jsx';
+import { AuthProvider } from './useAuth.jsx';
 
 // Mock the entire useAuth hook to provide a stable apiCall for testing useConfigDatabase
-jest.mock('./useAuth', () => ({
+jest.mock('./useAuth.jsx', () => ({
   __esModule: true,
-  ...jest.requireActual('./useAuth'), // Keep actual AuthProvider for the wrapper
+  ...jest.requireActual('./useAuth.jsx'), // Keep actual AuthProvider for the wrapper
   useAuth: () => ({
     // This mock simulates the authenticated apiCall from useAuth by delegating to the global fetch mock
     apiCall: jest.fn().mockImplementation((url, method, body) => {

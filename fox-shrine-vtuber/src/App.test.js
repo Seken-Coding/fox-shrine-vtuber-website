@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import App from './App';
+import App from './App.jsx';
 
 // Mock the providers to prevent actual API calls and context issues
-jest.mock('./hooks/useAuth', () => ({
+jest.mock('./hooks/useAuth.jsx', () => ({
   AuthProvider: ({ children }) => <div>{children}</div>,
   useAuth: () => ({
     user: null,
@@ -11,7 +11,7 @@ jest.mock('./hooks/useAuth', () => ({
   }),
 }));
 
-jest.mock('./hooks/useConfigDatabase', () => ({
+jest.mock('./hooks/useConfigDatabase.jsx', () => ({
   ConfigProvider: ({ children }) => <div>{children}</div>,
   useConfig: () => ({
     config: {
