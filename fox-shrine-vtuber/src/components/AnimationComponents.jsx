@@ -49,9 +49,8 @@ export const quickTransition = {
 // Animated wrapper components
 export const AnimatedSection = ({ children, delay = 0, className = "", ...props }) => (
   <motion.section
-    initial="initial"
-    whileInView="animate"
-    viewport={{ once: true, margin: "-100px" }}
+    initial={false}
+    animate="animate"
     variants={fadeInUp}
     transition={{ ...smoothTransition, delay }}
     className={className}
@@ -63,9 +62,8 @@ export const AnimatedSection = ({ children, delay = 0, className = "", ...props 
 
 export const AnimatedContainer = ({ children, className = "", ...props }) => (
   <motion.div
-    initial="initial"
-    whileInView="animate"
-    viewport={{ once: true, margin: "-50px" }}
+    initial={false}
+    animate="animate"
     variants={staggerContainer}
     className={className}
     {...props}
@@ -88,9 +86,8 @@ export const AnimatedCard = ({ children, index = 0, className = "", hover = true
 
 export const FadeInFromTop = ({ children, delay = 0, className = "", ...props }) => (
   <motion.div
-    initial="initial"
-    whileInView="animate"
-    viewport={{ once: true }}
+    initial={false}
+    animate="animate"
     variants={fadeInFromTop}
     transition={{ ...smoothTransition, delay }}
     className={className}
@@ -102,9 +99,8 @@ export const FadeInFromTop = ({ children, delay = 0, className = "", ...props })
 
 export const SlideInFromLeft = ({ children, delay = 0, className = "", ...props }) => (
   <motion.div
-    initial="initial"
-    whileInView="animate"
-    viewport={{ once: true }}
+    initial={false}
+    animate="animate"
     variants={slideInFromLeft}
     transition={{ ...smoothTransition, delay }}
     className={className}

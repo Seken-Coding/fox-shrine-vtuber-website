@@ -1,4 +1,4 @@
-import React from 'react';
+import PageTransition from '../components/PageTransition';
 import HeroSection from '../components/HeroSection';
 import StreamSchedule from '../components/StreamSchedule';
 import LatestVideos from '../components/LatestVideos';
@@ -6,7 +6,7 @@ import MerchShowcase from '../components/MerchShowcase';
 
 const HomePage = () => {
   return (
-    <div>
+    <PageTransition>
       <HeroSection />
       
       {/* Latest stream embed */}
@@ -89,7 +89,7 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-    </div>
+    </PageTransition>
   );
 };
 

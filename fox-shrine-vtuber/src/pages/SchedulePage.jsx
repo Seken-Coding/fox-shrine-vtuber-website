@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import PageTransition from '../components/PageTransition';
 import { FaClock, FaGamepad, FaPaintBrush, FaUsers, FaCalendarAlt, FaRegBell, FaRegMoon } from 'react-icons/fa';
 import SEO from '../components/SEO';
 
@@ -62,7 +64,7 @@ const SchedulePage = () => {
   }, [timeZone]);
 
   return (
-    <>
+    <PageTransition>
       <SEO 
         title="Stream Schedule - Fox Shrine"
         description="Find out when the next live stream is happening and join the fox den!"
@@ -144,7 +146,7 @@ const SchedulePage = () => {
                 <p className="font-semibold">The Fox Den is always open!</p>
                 <p className="text-sm mt-2">Join our Discord for offline chats, memes, and announcements.</p>
               </div>
-              <a href="#" className="mt-4 bg-white text-shrine-red font-bold py-2 px-4 rounded-full hover:bg-shrine-white transition-colors">Join Discord</a>
+              <Link to="/connect" className="mt-4 bg-white text-shrine-red font-bold py-2 px-4 rounded-full hover:bg-shrine-white transition-colors">Join Discord</Link>
             </motion.div>
           </div>
 
@@ -188,7 +190,7 @@ const SchedulePage = () => {
 
         </div>
       </div>
-    </>
+    </PageTransition>
   );
 };
 

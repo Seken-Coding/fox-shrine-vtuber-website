@@ -1,4 +1,3 @@
-import React from 'react';
 import SEO from '../components/SEO';
 import PageTransition from '../components/PageTransition';
 import SocialShare from '../components/SocialShare';

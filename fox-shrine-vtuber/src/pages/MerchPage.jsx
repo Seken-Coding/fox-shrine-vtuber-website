@@ -1,4 +1,3 @@
-import React from 'react';
 import PageTransition from '../components/PageTransition';
 import SEO from '../components/SEO';
 import MerchShowcase from '../components/MerchShowcase';

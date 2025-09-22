@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { ConfigProvider } from './hooks/useConfigDatabase';
@@ -10,13 +9,16 @@ import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import LoginPage from './pages/LoginPage';
 import AdminDashboard from './components/AdminDashboard';
+import ProtectedRoute from './components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
-import NotFoundPage from './pages/NotFoundPage';
 import SchedulePage from './pages/SchedulePage';
 import ContentPage from './pages/ContentPage';
 import MerchPage from './pages/MerchPage';
 import GalleryPage from './pages/GalleryPage';
 import ContactPage from './pages/ContactPage';
+import ErrorBoundary from './components/ErrorBoundary';
+
+// ProtectedRoute is now a component under components/ for easier testing
 
 function App() {
   return (
@@ -29,6 +31,7 @@ function App() {
               <div className="min-h-screen bg-white dark:bg-dark-bg text-gray-900 dark:text-dark-text transition-colors duration-300">
                 <Navbar />
                 <main>
+          <ErrorBoundary>
           <Routes>
             <Route path="/" element={<HomePage />} />
             {/* Add other routes as pages are created */}
@@ -36,7 +39,11 @@ function App() {
             {/* Authentication & User Pages */}
             <Route path="/login" element={<LoginPage />} />
             {/* Admin Dashboard - Protected Route */}
-            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin" element={
+              <ProtectedRoute requireAdmin>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } />
             {/* Development Only - Setup Page */}
             
             <Route path="/schedule" element={<SchedulePage />} />
@@ -56,6 +63,7 @@ function App() {
               </div>
             } />
           </Routes>
+          </ErrorBoundary>
         </main>
                 <Footer />
               </div>

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from './useAuth';
 
 // Create Context
@@ -104,6 +104,7 @@ export const ConfigProvider = ({ children }) => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const { apiCall } = useAuth(); // Keep this to use the authenticated apiCall for updates
 
+  // API base URL is static across component lifetime; do not include in hook deps
   const API_BASE_URL = process.env.NODE_ENV === 'production'
     ? 'https://fox-shrine-vtuber-website.onrender.com/api'
     : 'http://localhost:3002/api';
@@ -195,10 +196,11 @@ export const ConfigProvider = ({ children }) => {
       current[keyPath[keyPath.length - 1]] = value;
       setConfig(newConfig);
 
-      // Send to API
-      const response = await apiCall(`${API_BASE_URL}/config/${key}`, 'PUT', {
-        value,
-        category
+      // Send to API using authenticated apiCall helper
+      const response = await apiCall(`/config/${key}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value, category })
       });
 
       if (!response.ok) {
@@ -207,7 +209,7 @@ export const ConfigProvider = ({ children }) => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const result = await response.json();
+  const result = await response.json();
       
       if (!result.success) {
         // Revert optimistic update on failure
@@ -231,7 +233,7 @@ export const ConfigProvider = ({ children }) => {
       setConfig(config);
       throw error;
     }
-  }, [config, API_BASE_URL, apiCall]);
+  }, [config, apiCall]);
 
   // Initial load
   useEffect(() => {

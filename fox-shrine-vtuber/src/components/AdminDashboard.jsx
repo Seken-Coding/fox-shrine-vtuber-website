@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { PermissionGate } from '../hooks/useAuth';
 
@@ -74,7 +74,7 @@ const AdminDashboard = () => {
             const response = await apiCall(`/admin/users/${userId}/role`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ role: roleName })
+                body: JSON.stringify({ roleName })
             });
 
             if (response.ok) {
@@ -183,7 +183,7 @@ const AdminDashboard = () => {
                             {activeTab === 'roles' && <RolesTab roles={roles} />}
                         </PermissionGate>
                         <PermissionGate permission="config.read" showMessage>
-                            {activeTab === 'config' && <ConfigTab configs={configs} onUpdateConfig={updateConfiguration} hasUpdatePermission={hasPermission('config.update')} />}
+                            {activeTab === 'config' && <ConfigTab configs={configs} onUpdateConfig={updateConfiguration} hasUpdatePermission={hasPermission('config.write')} />}
                         </PermissionGate>
                     </main>
                 </>

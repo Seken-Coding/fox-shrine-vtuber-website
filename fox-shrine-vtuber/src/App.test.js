@@ -8,6 +8,8 @@ jest.mock('./hooks/useAuth', () => ({
   useAuth: () => ({
     user: null,
     loading: false,
+    isAuthenticated: () => false,
+    isAdmin: () => false,
   }),
 }));
 

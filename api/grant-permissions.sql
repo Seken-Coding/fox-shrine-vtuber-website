@@ -12,17 +12,16 @@ GRANT EXECUTE ON SCHEMA::dbo TO [Vtuber_admin];
 GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.Users TO [Vtuber_admin];
 GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.Roles TO [Vtuber_admin];
 GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.Permissions TO [Vtuber_admin];
-GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.UserRoles TO [Vtuber_admin];
+-- UserRoles table does not exist in current schema; roles are linked via Users.RoleId
 GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.RolePermissions TO [Vtuber_admin];
 GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.UserSessions TO [Vtuber_admin];
-GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.UserActivity TO [Vtuber_admin];
+GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.ActivityLogs TO [Vtuber_admin];
 
 -- Grant permissions on stored procedures
 GRANT EXECUTE ON dbo.CreateUser TO [Vtuber_admin];
-GRANT EXECUTE ON dbo.ValidateUser TO [Vtuber_admin];
-GRANT EXECUTE ON dbo.GetUserPermissions TO [Vtuber_admin];
+GRANT EXECUTE ON dbo.GetUserWithPermissions TO [Vtuber_admin];
 GRANT EXECUTE ON dbo.LogUserActivity TO [Vtuber_admin];
-GRANT EXECUTE ON dbo.CleanupExpiredSessions TO [Vtuber_admin];
+GRANT EXECUTE ON dbo.CleanExpiredSessions TO [Vtuber_admin];
 
 PRINT 'Permissions granted successfully to Vtuber_admin user';
 
@@ -47,8 +46,7 @@ BEGIN
     DECLARE @AdminUserId INT = SCOPE_IDENTITY();
     
     -- Assign Super Admin role (ID = 1)
-    INSERT INTO dbo.UserRoles (UserId, RoleId, AssignedAt, AssignedBy)
-    VALUES (@AdminUserId, 1, GETUTCDATE(), @AdminUserId);
+    UPDATE dbo.Users SET RoleId = 1 WHERE Id = @AdminUserId;
     
     PRINT 'Default admin user "foxadmin" created successfully';
 END

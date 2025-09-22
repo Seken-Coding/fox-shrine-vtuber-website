@@ -1,4 +1,3 @@
-import React from 'react';
 import { FaTwitter, FaFacebook, FaReddit, FaLink } from 'react-icons/fa';
 
 const SocialShare = ({ url, title }) => {

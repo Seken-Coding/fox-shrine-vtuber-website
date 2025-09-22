@@ -8,6 +8,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 require('dotenv').config();
+const { validate, userRegistrationSchema, userLoginSchema, roleUpdateSchema } = require('./middleware/validation');
+const Joi = require('joi');
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -22,7 +24,17 @@ app.use(helmet({
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
             imgSrc: ["'self'", "data:", "https:"],
             scriptSrc: ["'self'"],
-            connectSrc: ["'self'", "https://fox-shrine-vtuber-website.onrender.com", "https://fox-shrine-vtuber-website.vercel.app"],
+            connectSrc: [
+                "'self'",
+                ...(process.env.NODE_ENV === 'production' ? [
+                    'https://fox-shrine-vtuber-website.onrender.com',
+                    'https://fox-shrine-vtuber-website.vercel.app'
+                ] : [
+                    'http://localhost:3000',
+                    'http://localhost:3001',
+                    'http://localhost:3002'
+                ])
+            ],
         },
     },
 }));
@@ -43,13 +55,17 @@ app.use('/api/', limiter);
 
 // CORS configuration
 const corsOptions = {
-    origin: [
-        'http://localhost:3000',
-        'http://localhost:3001',
-        'https://foxshrinevtuber.com',
-        'https://www.foxshrinevtuber.com',
-        'https://fox-shrine-vtuber-website.vercel.app'
-    ],
+    origin: process.env.NODE_ENV === 'production'
+        ? [
+            'https://foxshrinevtuber.com',
+            'https://www.foxshrinevtuber.com',
+            'https://fox-shrine-vtuber-website.vercel.app'
+          ]
+        : [
+            'http://localhost:3000',
+            'http://localhost:3001',
+            'http://localhost:3002'
+          ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     credentials: true
@@ -112,6 +128,12 @@ const initializeDatabase = async () => {
 const JWT_SECRET = process.env.JWT_SECRET || 'fox-shrine-vtuber-secret-key-change-in-production';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 const REFRESH_TOKEN_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN || '7d';
+
+// Fail-fast in production if using a weak or default secret
+if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || JWT_SECRET === 'fox-shrine-vtuber-secret-key-change-in-production')) {
+    console.error('FATAL: JWT_SECRET is missing or using default in production. Set a strong JWT_SECRET.');
+    process.exit(1);
+}
 
 // Authentication middleware
 const authenticateToken = async (req, res, next) => {
@@ -241,6 +263,34 @@ const optionalAuth = async (req, res, next) => {
     next();
 };
 
+// =============================================
+// AUDIT TRAIL HELPER
+// =============================================
+/**
+ * Logs an audit trail for important system actions. If a user is authenticated,
+ * this records a user activity via LogUserActivity. Otherwise, it logs to console
+ * to avoid database dependency assumptions on a separate system logs table.
+ */
+const logAuditTrail = async (req, action, details) => {
+    try {
+        if (req && req.user && req.user.id) {
+            const pool = await poolPromise;
+            await pool.request()
+                .input('UserId', sql.Int, req.user.id)
+                .input('Action', sql.NVarChar(100), action)
+                .input('Details', sql.NVarChar(sql.MAX), details || '')
+                .input('IPAddress', sql.NVarChar(45), req.ip)
+                .input('UserAgent', sql.NVarChar(500), req.get('User-Agent') || '')
+                .execute('LogUserActivity');
+        } else {
+            // Fallback: log to console to avoid runtime errors if no user context
+            console.log(`[AUDIT] ${new Date().toISOString()} ${action} - ${details}`);
+        }
+    } catch (e) {
+        console.error('Audit trail logging failed:', e.message);
+    }
+};
+
 // Utility function to generate tokens
 const generateTokens = (userId) => {
     const accessToken = jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
@@ -288,7 +338,7 @@ app.get('/api/health', async (req, res) => {
 // =============================================
 
 // User registration
-app.post('/api/auth/register', async (req, res) => {
+app.post('/api/auth/register', validate(userRegistrationSchema), async (req, res) => {
     try {
         const { username, email, password, displayName } = req.body;
 
@@ -377,7 +427,7 @@ app.post('/api/auth/register', async (req, res) => {
 });
 
 // User login
-app.post('/api/auth/login', async (req, res) => {
+app.post('/api/auth/login', validate(userLoginSchema), async (req, res) => {
     try {
         const { username, password } = req.body;
 
@@ -569,6 +619,52 @@ app.post('/api/auth/logout', authenticateToken, async (req, res) => {
     }
 });
 
+// Refresh access token
+app.post('/api/auth/refresh', async (req, res) => {
+    try {
+        const { refreshToken } = req.body || {};
+        if (!refreshToken) {
+            return res.status(400).json({ success: false, error: 'refreshToken is required' });
+        }
+
+        let decoded;
+        try {
+            decoded = jwt.verify(refreshToken, JWT_SECRET);
+        } catch (e) {
+            return res.status(401).json({ success: false, error: 'Invalid refresh token' });
+        }
+
+        if (decoded.type !== 'refresh') {
+            return res.status(400).json({ success: false, error: 'Invalid token type' });
+        }
+
+        const pool = await poolPromise;
+        const session = await pool.request()
+            .input('RefreshToken', sql.NVarChar(500), refreshToken)
+            .query(`SELECT TOP 1 * FROM UserSessions WHERE RefreshToken = @RefreshToken AND IsActive = 1 AND ExpiresAt > GETUTCDATE()`);
+
+        if (session.recordset.length === 0) {
+            return res.status(401).json({ success: false, error: 'Refresh session not found or expired' });
+        }
+
+        const newTokens = generateTokens(decoded.userId);
+
+        // Update session with new tokens and expiry
+        await pool.request()
+            .input('OldRefreshToken', sql.NVarChar(500), refreshToken)
+            .input('NewAccessToken', sql.NVarChar(500), newTokens.accessToken)
+            .input('NewRefreshToken', sql.NVarChar(500), newTokens.refreshToken)
+            .input('NewExpiresAt', sql.DateTime2, new Date(Date.now() + 24 * 60 * 60 * 1000))
+            .query(`UPDATE UserSessions
+                    SET SessionToken = @NewAccessToken, RefreshToken = @NewRefreshToken, ExpiresAt = @NewExpiresAt
+                    WHERE RefreshToken = @OldRefreshToken AND IsActive = 1`);
+
+        res.json({ success: true, tokens: newTokens });
+    } catch (error) {
+        console.error('Refresh token error:', error);
+        res.status(500).json({ success: false, error: 'Failed to refresh token' });
+    }
+});
 // =============================================
 // USER MANAGEMENT ENDPOINTS (Admin Only)
 // =============================================
@@ -644,7 +740,7 @@ app.get('/api/admin/users', authenticateToken, requirePermission('users.read'), 
 });
 
 // Update user role (Admin only)
-app.put('/api/admin/users/:id/role', authenticateToken, requirePermission('users.roles'), async (req, res) => {
+app.put('/api/admin/users/:id/role', authenticateToken, requirePermission('users.roles'), validate(roleUpdateSchema), async (req, res) => {
     try {
         const { id } = req.params;
         const { roleName } = req.body;
@@ -800,8 +896,8 @@ app.get('/api/config/:category', optionalAuth, async (req, res) => {
     }
 });
 
-// Update configuration
-app.put('/api/config/:key', async (req, res) => {
+// Update configuration (Admin only)
+app.put('/api/config/:key', authenticateToken, requirePermission('config.write'), async (req, res) => {
     try {
         const { key } = req.params;
         const { value, category = 'general', description } = req.body;
@@ -820,11 +916,19 @@ app.put('/api/config/:key', async (req, res) => {
             .input('Value', sql.NVarChar(sql.MAX), String(value))
             .input('Category', sql.NVarChar(50), category)
             .input('Description', sql.NVarChar(500), description)
-            .input('UpdatedBy', sql.NVarChar(100), req.ip || 'api')
+            .input('UpdatedBy', sql.NVarChar(100), (req.user && req.user.username) || req.ip || 'api')
             .execute('UpsertConfiguration');
         
-        // Log the audit trail
+        // Log the audit trail and user activity
         await logAuditTrail(req, 'UPDATE_CONFIG', `Updated ${key} = ${value}`);
+        const pool2 = await poolPromise;
+        await pool2.request()
+            .input('UserId', sql.Int, req.user.id)
+            .input('Action', sql.NVarChar(100), 'CONFIG_UPDATE')
+            .input('Details', sql.NVarChar(sql.MAX), `Updated ${key}`)
+            .input('IPAddress', sql.NVarChar(45), req.ip)
+            .input('UserAgent', sql.NVarChar(500), req.get('User-Agent') || '')
+            .execute('LogUserActivity');
         
         res.json({
             success: true,
@@ -844,7 +948,16 @@ app.put('/api/config/:key', async (req, res) => {
 });
 
 // Bulk update configuration (Admin only)
-app.put('/api/config', authenticateToken, requirePermission('config.write'), async (req, res) => {
+const bulkConfigSchema = Joi.object({
+    configs: Joi.array().items(Joi.object({
+        key: Joi.string().min(1).required(),
+        value: Joi.alternatives(Joi.string(), Joi.number(), Joi.boolean(), Joi.object(), Joi.array()).required(),
+        category: Joi.string().min(1).default('general'),
+        description: Joi.string().max(500).allow('', null),
+    })).required()
+});
+
+app.put('/api/config', authenticateToken, requirePermission('config.write'), validate(bulkConfigSchema), async (req, res) => {
     try {
         const { configs } = req.body;
         

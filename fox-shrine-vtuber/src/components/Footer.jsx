@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaTwitch, FaYoutube, FaTwitter, FaDiscord, FaInstagram } from 'react-icons/fa';
 import { LogoPlaceholder } from './PlaceholderImages';

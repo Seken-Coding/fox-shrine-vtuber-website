@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import AuthModal from '../components/AuthModal';
+import PageTransition from '../components/PageTransition';
 
 const LoginPage = () => {
     const [showAuthModal, setShowAuthModal] = useState(false);
@@ -19,6 +20,7 @@ const LoginPage = () => {
 
     if (user) {
         return (
+            <PageTransition>
             <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white py-12">
                 <div className="max-w-4xl mx-auto px-4">
                     {/* Welcome Header */}
@@ -136,10 +138,13 @@ const LoginPage = () => {
                     )}
                 </div>
             </div>
+            </PageTransition>
         );
     }
 
     return (
+        <>
+        <PageTransition>
         <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white py-12">
             <div className="max-w-4xl mx-auto px-4">
                 {/* Header */}
@@ -267,14 +272,16 @@ const LoginPage = () => {
                     </div>
                 </div>
             </div>
-
-            {/* Authentication Modal */}
-            <AuthModal 
-                isOpen={showAuthModal} 
-                onClose={() => setShowAuthModal(false)} 
-                mode={authMode} 
-            />
         </div>
+        </PageTransition>
+
+        {/* Authentication Modal */}
+        <AuthModal 
+            isOpen={showAuthModal} 
+            onClose={() => setShowAuthModal(false)} 
+            mode={authMode} 
+        />
+        </>
     );
 };
 

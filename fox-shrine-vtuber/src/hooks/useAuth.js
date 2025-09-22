@@ -43,20 +43,40 @@ export const AuthProvider = ({ children }) => {
             headers.Authorization = `Bearer ${token}`;
         }
 
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        let response = await fetch(`${API_BASE_URL}${endpoint}`, {
             ...options,
             headers,
         });
 
         if (response.status === 401 && token) {
-            // Token expired, clear it and redirect to login
-            clearTokens();
-            setUser(null);
-            throw new Error('Session expired');
+            // Attempt refresh once
+            try {
+                const refreshToken = localStorage.getItem('foxshrine_refresh_token');
+                if (!refreshToken) throw new Error('No refresh token');
+                const refreshRes = await fetch(`${API_BASE_URL}/auth/refresh`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ refreshToken })
+                });
+                if (refreshRes.ok) {
+                    const data = await refreshRes.json();
+                    storeTokens(data.tokens);
+                    // Retry original request with new token
+                    const retryHeaders = { ...headers, Authorization: `Bearer ${data.tokens.accessToken}` };
+                    response = await fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers: retryHeaders });
+                } else {
+                    throw new Error('Refresh failed');
+                }
+            } catch (e) {
+                // Refresh failed; clear and surface session expiration
+                clearTokens();
+                setUser(null);
+                throw new Error('Session expired');
+            }
         }
 
         return response;
-    }, [getStoredToken, clearTokens]);
+    }, [getStoredToken, clearTokens, storeTokens]);
 
     // Load user profile
     const loadUserProfile = useCallback(async () => {
