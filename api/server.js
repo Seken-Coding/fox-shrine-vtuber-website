@@ -58,23 +58,41 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // CORS configuration
+const defaultProdOrigins = [
+    'https://foxshrinevtuber.com',
+    'https://www.foxshrinevtuber.com',
+    'https://fox-shrine-vtuber-website.vercel.app',
+    'https://www.mei-satsuki.net',
+    'https://mei-satsuki.net',
+];
+
+const envOrigins = process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(',').map(o => o.trim()).filter(Boolean)
+    : null;
+
+const allowedOrigins = process.env.NODE_ENV === 'production'
+    ? ((envOrigins && envOrigins.length) ? envOrigins : defaultProdOrigins)
+    : [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://localhost:3002'
+      ];
+
 const corsOptions = {
-    origin: process.env.NODE_ENV === 'production'
-        ? [
-            'https://foxshrinevtuber.com',
-            'https://www.foxshrinevtuber.com',
-            'https://fox-shrine-vtuber-website.vercel.app'
-          ]
-        : [
-            'http://localhost:3000',
-            'http://localhost:3001',
-            'http://localhost:3002'
-          ],
+    origin: function (origin, callback) {
+        // Allow requests with no origin (curl, server-to-server)
+        if (!origin) return callback(null, true);
+        const isAllowed = allowedOrigins.includes(origin);
+        return callback(isAllowed ? null : new Error(`CORS origin not allowed: ${origin}`), isAllowed);
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    credentials: true
+    credentials: true,
+    optionsSuccessStatus: 204,
 };
 app.use(cors(corsOptions));
+// Ensure preflight across-the-board is handled
+app.options('*', cors(corsOptions));
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
