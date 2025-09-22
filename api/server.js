@@ -55,8 +55,6 @@ const limiter = rateLimit({
         statusCode: 429
     }
 });
-app.use('/api/', limiter);
-
 // CORS configuration
 const defaultProdOrigins = [
     'https://foxshrinevtuber.com',
@@ -70,29 +68,56 @@ const envOrigins = process.env.CORS_ORIGINS
     ? process.env.CORS_ORIGINS.split(',').map(o => o.trim()).filter(Boolean)
     : null;
 
-const allowedOrigins = process.env.NODE_ENV === 'production'
-    ? ((envOrigins && envOrigins.length) ? envOrigins : defaultProdOrigins)
-    : [
-        'http://localhost:3000',
-        'http://localhost:3001',
-        'http://localhost:3002'
-      ];
+const devOrigins = [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3002'
+];
+
+let allowedOrigins = defaultProdOrigins;
+// If env override is supplied, use it as primary allowlist
+if (envOrigins && envOrigins.length) {
+    allowedOrigins = envOrigins;
+}
+// In non-production, include dev origins too (union)
+if (process.env.NODE_ENV !== 'production') {
+    allowedOrigins = Array.from(new Set([ ...allowedOrigins, ...devOrigins ]));
+}
+
+// Normalize origins for robust comparison (lowercase, strip trailing slash)
+const normalizeOrigin = (o) => {
+    if (!o) return o;
+    try {
+        // Ensure consistent protocol+host without trailing slash
+        const url = new URL(o);
+        return `${url.protocol}//${url.host}`.toLowerCase();
+    } catch {
+        // Fallback: simple normalization
+        return String(o).toLowerCase().replace(/\/$/, '');
+    }
+};
+
+const normalizedAllowed = allowedOrigins.map(normalizeOrigin);
 
 const corsOptions = {
     origin: function (origin, callback) {
         // Allow requests with no origin (curl, server-to-server)
         if (!origin) return callback(null, true);
-        const isAllowed = allowedOrigins.includes(origin);
-        return callback(isAllowed ? null : new Error(`CORS origin not allowed: ${origin}`), isAllowed);
+        const isAllowed = normalizedAllowed.includes(normalizeOrigin(origin));
+        // Do not throw; just disable CORS for disallowed origins
+        return callback(null, isAllowed);
     },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     credentials: true,
     optionsSuccessStatus: 204,
 };
+// Register CORS early so preflight is handled before other middleware
 app.use(cors(corsOptions));
-// Ensure preflight across-the-board is handled
 app.options('*', cors(corsOptions));
+
+// Rate limiting (after CORS so preflights succeed reliably)
+app.use('/api/', limiter);
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
