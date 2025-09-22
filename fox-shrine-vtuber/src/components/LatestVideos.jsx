@@ -29,9 +29,9 @@ const videoData = [
 
 const LatestVideos = () => {
   return (
-    <section className="py-16 bg-shrine-white">
+    <section className="py-16 bg-shrine-white dark:bg-dark-bg">
       <div className="container mx-auto px-4">
-        <h2 className="section-title">Latest Videos</h2>
+  <h2 className="section-title">Latest Videos</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
           {videoData.map(video => (
@@ -56,8 +56,8 @@ const LatestVideos = () => {
                 </div>
               </div>
               
-              <h3 className="mt-3 font-medium text-lg line-clamp-2">{video.title}</h3>
-              <div className="flex justify-between text-sm text-gray-600 mt-1">
+              <h3 className="mt-3 font-medium text-lg line-clamp-2 text-shrine-dark dark:text-dark-text">{video.title}</h3>
+              <div className="flex justify-between text-sm text-gray-600 dark:text-dark-text-secondary mt-1">
                 <span>{video.views} views</span>
                 <span>{video.date}</span>
               </div>

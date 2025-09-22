@@ -159,8 +159,8 @@ const SchedulePage = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-center mb-12"
             >
-              <h2 className="font-cinzel text-4xl font-bold text-shrine-red">Special Shrine Events</h2>
-              <p className="text-shrine-dark text-lg mt-2">Mark your calendars for these special occasions!</p>
+              <h2 className="font-cinzel text-4xl font-bold text-shrine-red dark:text-dark-shrine-red">Special Shrine Events</h2>
+              <p className="text-shrine-dark dark:text-dark-text-secondary text-lg mt-2">Mark your calendars for these special occasions!</p>
             </motion.div>
             <div className="space-y-8 max-w-3xl mx-auto">
               {specialEvents.map((event, index) => (
@@ -170,17 +170,17 @@ const SchedulePage = () => {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.2 }}
-                  className="bg-white rounded-lg shadow-md p-6 flex items-center space-x-6 border-l-4 border-shrine-gold"
+                  className="bg-white dark:bg-dark-card rounded-lg shadow-md p-6 flex items-center space-x-6 border-l-4 border-shrine-gold dark:border-dark-shrine-gold"
                 >
-                  <div className="text-shrine-red">
+                  <div className="text-shrine-red dark:text-dark-shrine-red">
                     <FaCalendarAlt className="w-10 h-10" />
                   </div>
                   <div>
-                    <p className="font-bold text-shrine-dark text-sm">{event.date}</p>
-                    <h3 className="font-cinzel text-2xl text-shrine-red">{event.title}</h3>
-                    <p className="text-gray-600">{event.description}</p>
+                    <p className="font-bold text-shrine-dark dark:text-dark-text text-sm">{event.date}</p>
+                    <h3 className="font-cinzel text-2xl text-shrine-red dark:text-dark-shrine-red">{event.title}</h3>
+                    <p className="text-gray-600 dark:text-dark-text-secondary">{event.description}</p>
                   </div>
-                  <button className="ml-auto bg-fox-orange/10 text-fox-orange p-3 rounded-full hover:bg-fox-orange/20 transition-colors">
+                  <button className="ml-auto bg-fox-orange/10 dark:bg-dark-fox-orange/10 text-fox-orange dark:text-dark-fox-orange p-3 rounded-full hover:bg-fox-orange/20 dark:hover:bg-dark-fox-orange/20 transition-colors">
                     <FaRegBell />
                   </button>
                 </motion.div>

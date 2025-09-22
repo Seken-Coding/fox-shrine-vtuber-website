@@ -32,7 +32,7 @@ const scheduleData = [
 
 const StreamSchedule = () => {
   return (
-    <section className="py-16 bg-shrine-white">
+    <section className="py-16 bg-shrine-white dark:bg-dark-bg">
       <div className="container mx-auto px-4">
         <h2 className="section-title text-center">Stream Schedule</h2>
         
@@ -43,10 +43,10 @@ const StreamSchedule = () => {
               className="shrine-card hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1"
             >
               <div className="text-4xl text-center mb-4">{item.icon}</div>
-              <h3 className="font-cinzel text-xl text-shrine-red text-center mb-2">{item.day}</h3>
-              <p className="text-center font-medium text-fox-orange mb-4">{item.time}</p>
-              <h4 className="text-center font-bold mb-2">{item.title}</h4>
-              <p className="text-center text-sm text-gray-600">{item.description}</p>
+              <h3 className="font-cinzel text-xl text-shrine-red dark:text-dark-shrine-red text-center mb-2">{item.day}</h3>
+              <p className="text-center font-medium text-fox-orange dark:text-dark-fox-orange mb-4">{item.time}</p>
+              <h4 className="text-center font-bold mb-2 text-shrine-dark dark:text-dark-text">{item.title}</h4>
+              <p className="text-center text-sm text-gray-600 dark:text-dark-text-secondary">{item.description}</p>
             </div>
           ))}
         </div>
