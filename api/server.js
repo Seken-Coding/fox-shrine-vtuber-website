@@ -14,6 +14,10 @@ const Joi = require('joi');
 const app = express();
 const PORT = process.env.PORT || 3002;
 
+// Trust Render/hosting proxy so client IPs are derived from X-Forwarded-* headers
+// This must be set before any middleware that relies on req.ip (e.g., rate limiter)
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet({
     crossOriginEmbedderPolicy: false,
