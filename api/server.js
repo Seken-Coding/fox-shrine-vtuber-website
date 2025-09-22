@@ -74,14 +74,16 @@ const devOrigins = [
     'http://localhost:3002'
 ];
 
-let allowedOrigins = defaultProdOrigins;
-// If env override is supplied, use it as primary allowlist
-if (envOrigins && envOrigins.length) {
-    allowedOrigins = envOrigins;
-}
-// In non-production, include dev origins too (union)
+// Start with default production allowlist; union with env-provided values if any
+let allowedOrigins = Array.from(new Set([ ...defaultProdOrigins, ...(envOrigins || []) ]));
+// In non-production, also allow localhost dev origins
 if (process.env.NODE_ENV !== 'production') {
     allowedOrigins = Array.from(new Set([ ...allowedOrigins, ...devOrigins ]));
+}
+
+// Optional: log computed allowlist for troubleshooting if enabled
+if (process.env.LOG_CORS === 'true') {
+    console.log('[CORS] Allowed origins:', allowedOrigins);
 }
 
 // Normalize origins for robust comparison (lowercase, strip trailing slash)
