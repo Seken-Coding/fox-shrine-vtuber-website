@@ -58,9 +58,9 @@ const defaultConfig = {
     heroSubtitle: 'Join me on a magical journey filled with laughter, games, and shrine fox mischief!',
     aboutText: 'Legend has it that I was once a regular fox who stumbled upon an abandoned shrine deep in the mystical forest.',
     latestVideos: [
-      { id: '1', title: 'Forest Spirit Adventure - Part 1', thumbnail: '/thumbnails/video1.jpg', views: '12K', date: '2 days ago', duration: '2:34:17' },
-      { id: '2', title: 'Chat & Chill: Ask Me Anything!', thumbnail: '/thumbnails/video2.jpg', views: '8.5K', date: '5 days ago', duration: '1:47:22' },
-      { id: '3', title: 'Scary Games Night (I was so brave!)', thumbnail: '/thumbnails/video3.jpg', views: '15K', date: '1 week ago', duration: '3:12:45' }
+      { id: '1', title: 'Forest Spirit Adventure - Part 1', thumbnail: '/thumbnails/video1.jpg', views: '12K', date: '2 days ago', duration: '2:34:17', url: 'https://www.youtube.com/watch?v=forest-adventure' },
+      { id: '2', title: 'Chat & Chill: Ask Me Anything!', thumbnail: '/thumbnails/video2.jpg', views: '8.5K', date: '5 days ago', duration: '1:47:22', url: 'https://www.youtube.com/watch?v=chat-chill-ama' },
+      { id: '3', title: 'Scary Games Night (I was so brave!)', thumbnail: '/thumbnails/video3.jpg', views: '15K', date: '1 week ago', duration: '3:12:45', url: 'https://www.youtube.com/watch?v=scary-games-night' }
     ],
     schedule: [
       { day: 'Monday', time: '7:00 PM - 10:00 PM', title: 'Chatting & Games', description: 'Starting the week with chill vibes and fun games', icon: '🎮' },
@@ -69,10 +69,10 @@ const defaultConfig = {
       { day: 'Sunday', time: '3:00 PM - 7:00 PM', title: 'Shrine Stories', description: 'Relax with shrine tales and community time', icon: '⛩️' }
     ],
     merch: [
-      { id: 'm1', name: 'Fox Plushie', image: '/merch/plushie.jpg', price: '$24.99', isNew: true },
-      { id: 'm2', name: 'Shrine Hoodie', image: '/merch/hoodie.jpg', price: '$49.99', isNew: false },
-      { id: 'm3', name: 'Magical Fox Mug', image: '/merch/mug.jpg', price: '$18.99', isNew: false },
-      { id: 'm4', name: 'Limited Edition Pin Set', image: '/merch/pins.jpg', price: '$15.99', isNew: true }
+      { id: 'm1', name: 'Fox Plushie', image: '/merch/plushie.jpg', price: '$24.99', isNew: true, url: 'https://shop.foxshrinevtuber.com/plushie' },
+      { id: 'm2', name: 'Shrine Hoodie', image: '/merch/hoodie.jpg', price: '$49.99', isNew: false, url: 'https://shop.foxshrinevtuber.com/hoodie' },
+      { id: 'm3', name: 'Magical Fox Mug', image: '/merch/mug.jpg', price: '$18.99', isNew: false, url: 'https://shop.foxshrinevtuber.com/mug' },
+      { id: 'm4', name: 'Limited Edition Pin Set', image: '/merch/pins.jpg', price: '$15.99', isNew: true, url: 'https://shop.foxshrinevtuber.com/pins' }
     ]
   },
   

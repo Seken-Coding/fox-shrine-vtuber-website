@@ -19,36 +19,47 @@ const MerchShowcase = () => {
         <p className="text-center max-w-xl mx-auto mb-12 text-shrine-dark dark:text-dark-text-secondary">Take a piece of the shrine home with you! Official merchandise featuring our mischievous fox mascot.</p>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {merchData.map(item => (
-            <div key={item.id} className="group">
-              <div className="relative bg-white dark:bg-dark-card rounded-lg overflow-hidden shadow-lg border border-gray-200 dark:border-dark-border">
-                {item.isNew && (
-                  <div className="absolute top-0 right-0 bg-shrine-red dark:bg-dark-shrine-red text-white text-xs font-bold px-2 py-1 z-10">
-                    NEW
+          {merchData.map(item => {
+            const hasExternalUrl = typeof item?.url === 'string' && /^https?:\/\//i.test(item.url);
+            const itemHref = hasExternalUrl ? item.url : '/merch';
+            const linkProps = hasExternalUrl ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+
+            return (
+              <div key={item.id ?? item.name} className="group">
+                <a href={itemHref} {...linkProps} className="block focus:outline-none focus:ring-2 focus:ring-shrine-red rounded-lg">
+                  <div className="relative bg-white dark:bg-dark-card rounded-lg overflow-hidden shadow-lg border border-gray-200 dark:border-dark-border">
+                    {item.isNew && (
+                      <div className="absolute top-0 right-0 bg-shrine-red dark:bg-dark-shrine-red text-white text-xs font-bold px-2 py-1 z-10">
+                        NEW
+                      </div>
+                    )}
+                    
+                    <div className="h-64 overflow-hidden">
+                      <PlaceholderImage 
+                        width="100%"
+                        height="100%"
+                        text="🛍️ Merch"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    </div>
+                    
+                    <div className="p-4">
+                      <h3 className="font-cinzel text-lg text-shrine-dark dark:text-dark-text">{item.name}</h3>
+                      <div className="flex justify-between items-center mt-2">
+                        <span className="font-medium text-shrine-dark dark:text-dark-text">{item.price}</span>
+                        <span className="bg-fox-orange dark:bg-dark-fox-orange text-white text-sm px-3 py-1 rounded inline-flex items-center gap-1">
+                          <span>View</span>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                )}
-                
-                <div className="h-64 overflow-hidden">
-                  <PlaceholderImage 
-                    width="100%"
-                    height="100%"
-                    text="🛍️ Merch"
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                </div>
-                
-                <div className="p-4">
-                  <h3 className="font-cinzel text-lg text-shrine-dark dark:text-dark-text">{item.name}</h3>
-                  <div className="flex justify-between items-center mt-2">
-                    <span className="font-medium text-shrine-dark dark:text-dark-text">{item.price}</span>
-                    <button className="bg-fox-orange dark:bg-dark-fox-orange text-white text-sm px-3 py-1 rounded hover:bg-shrine-red dark:hover:bg-dark-shrine-red transition-colors">
-                      Add to Cart
-                    </button>
-                  </div>
-                </div>
+                </a>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         
         <div className="text-center mt-10">
