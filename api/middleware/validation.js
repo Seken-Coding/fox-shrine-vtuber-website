@@ -24,10 +24,30 @@ const roleUpdateSchema = Joi.object({
   roleName: Joi.string().min(1).required(),
 });
 
+const bulkConfigSchema = Joi.object({
+  configs: Joi.array()
+    .items(
+      Joi.object({
+        key: Joi.string().min(1).required(),
+        value: Joi.alternatives(
+          Joi.string(),
+          Joi.number(),
+          Joi.boolean(),
+          Joi.object(),
+          Joi.array()
+        ).required(),
+        category: Joi.string().min(1).default('general'),
+        description: Joi.string().max(500).allow('', null),
+      })
+    )
+    .required(),
+});
+
 
 module.exports = {
   validate,
   userRegistrationSchema,
   userLoginSchema,
   roleUpdateSchema,
+  bulkConfigSchema,
 };

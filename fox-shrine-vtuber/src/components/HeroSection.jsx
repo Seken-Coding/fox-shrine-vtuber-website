@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { FoxCharacterPlaceholder } from './PlaceholderImages';
+import usePrefersReducedMotion from '../hooks/usePrefersReducedMotion';
 
 const HeroSection = () => {
+  const prefersReducedMotion = usePrefersReducedMotion();
   return (
     <div className="relative min-h-screen flex items-center">
       {/* Background with shrine gradient overlay */}
@@ -33,12 +35,12 @@ const HeroSection = () => {
           </div>
           
           <div className="w-full md:w-1/2 mt-8 md:mt-0 flex justify-center">
-            <FoxCharacterPlaceholder className="max-w-md animate-float" />
+            <FoxCharacterPlaceholder className={`max-w-md ${prefersReducedMotion ? '' : 'animate-float'}`} />
           </div>
         </div>
         
         {/* Scroll indicator */}
-        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <div className={`absolute bottom-10 left-1/2 transform -translate-x-1/2 ${prefersReducedMotion ? '' : 'animate-bounce'}`}>
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>

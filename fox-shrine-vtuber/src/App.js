@@ -1,74 +1,68 @@
+import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ConfigProvider } from './hooks/useConfigDatabase';
 import { AuthProvider } from './hooks/useAuth';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import HomePage from './pages/HomePage';
-import AboutPage from './pages/AboutPage';
-import LoginPage from './pages/LoginPage';
-import AdminDashboard from './components/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
-import SchedulePage from './pages/SchedulePage';
-import ContentPage from './pages/ContentPage';
-import MerchPage from './pages/MerchPage';
-import GalleryPage from './pages/GalleryPage';
-import ContactPage from './pages/ContactPage';
 import ErrorBoundary from './components/ErrorBoundary';
+import LoadingFallback from './components/LoadingFallback';
+
+const HomePage = lazy(() => import('./pages/HomePage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
+const SchedulePage = lazy(() => import('./pages/SchedulePage'));
+const ContentPage = lazy(() => import('./pages/ContentPage'));
+const MerchPage = lazy(() => import('./pages/MerchPage'));
+const GalleryPage = lazy(() => import('./pages/GalleryPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 // ProtectedRoute is now a component under components/ for easier testing
 
 function App() {
   return (
-      <ThemeProvider>
-        <AuthProvider>
-          <ConfigProvider>
-            <Router>
-              <ScrollToTop />
-              <div className="min-h-screen bg-white dark:bg-dark-bg text-gray-900 dark:text-dark-text transition-colors duration-300">
-                <Navbar />
-                <main>
-          <ErrorBoundary>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            {/* Add other routes as pages are created */}
-            <Route path="/about" element={<AboutPage />} />
-            {/* Authentication & User Pages */}
-            <Route path="/login" element={<LoginPage />} />
-            {/* Admin Dashboard - Protected Route */}
-            <Route path="/admin" element={
-              <ProtectedRoute requireAdmin>
-                <AdminDashboard />
-              </ProtectedRoute>
-            } />
-            {/* Development Only - Setup Page */}
-            
-            <Route path="/schedule" element={<SchedulePage />} />
-            <Route path="/content" element={<ContentPage />} />
-            <Route path="/merch" element={<MerchPage />} />
-            <Route path="/gallery" element={<GalleryPage />} />
-            <Route path="/connect" element={<ContactPage />} />
-            
-            {/* 404 Page */}
-            <Route path="*" element={
-              <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                  <h1 className="font-cinzel text-4xl text-shrine-red mb-4">Page Not Found</h1>
-                  <p className="mb-8">Oops! Looks like our fox has hidden this page!</p>
-                  <a href="/" className="fox-button">Return to Shrine</a>
-                </div>
-              </div>
-            } />
-          </Routes>
-          </ErrorBoundary>
-        </main>
-                <Footer />
-              </div>
-            </Router>
-          </ConfigProvider>
-        </AuthProvider>
-      </ThemeProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <ConfigProvider>
+          <Router>
+            <ScrollToTop />
+            <div className="min-h-screen bg-white dark:bg-dark-bg text-gray-900 dark:text-dark-text transition-colors duration-300">
+              <Navbar />
+              <main>
+                <ErrorBoundary>
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Routes>
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/about" element={<AboutPage />} />
+                      <Route path="/login" element={<LoginPage />} />
+                      <Route
+                        path="/admin"
+                        element={
+                          <ProtectedRoute requireAdmin>
+                            <AdminDashboard />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route path="/schedule" element={<SchedulePage />} />
+                      <Route path="/content" element={<ContentPage />} />
+                      <Route path="/merch" element={<MerchPage />} />
+                      <Route path="/gallery" element={<GalleryPage />} />
+                      <Route path="/connect" element={<ContactPage />} />
+                      <Route path="*" element={<NotFoundPage />} />
+                    </Routes>
+                  </Suspense>
+                </ErrorBoundary>
+              </main>
+              <Footer />
+            </div>
+          </Router>
+        </ConfigProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

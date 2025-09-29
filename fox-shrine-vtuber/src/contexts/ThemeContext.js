@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 
 const ThemeContext = createContext();
 
@@ -12,32 +12,53 @@ export const useTheme = () => {
 
 export const ThemeProvider = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Check localStorage first, then system preference
-    const savedTheme = localStorage.getItem('foxshrine_theme');
-    if (savedTheme !== null) {
-      return savedTheme === 'dark';
+    if (typeof window === 'undefined') {
+      return false;
     }
-    
-    // Default to system preference if no saved theme
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    try {
+      const savedTheme = localStorage.getItem('foxshrine_theme');
+      if (savedTheme !== null) {
+        return savedTheme === 'dark';
+      }
+    } catch (error) {
+      console.warn('Unable to read theme from localStorage:', error);
+    }
+
+    if (window.matchMedia) {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+
+    return false;
   });
 
   // Apply theme class to document root
   useEffect(() => {
-    const root = window.document.documentElement;
-    
+    if (typeof document === 'undefined') {
+      return;
+    }
+
+    const root = document.documentElement;
+
     if (isDarkMode) {
       root.classList.add('dark');
     } else {
       root.classList.remove('dark');
     }
-    
-    // Save preference to localStorage
-    localStorage.setItem('foxshrine_theme', isDarkMode ? 'dark' : 'light');
+
+    try {
+      localStorage.setItem('foxshrine_theme', isDarkMode ? 'dark' : 'light');
+    } catch (error) {
+      console.warn('Unable to persist theme to localStorage:', error);
+    }
   }, [isDarkMode]);
 
   // Listen for system theme changes
   useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) {
+      return undefined;
+    }
+
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     
     const handleChange = (e) => {
@@ -48,19 +69,24 @@ export const ThemeProvider = ({ children }) => {
       }
     };
 
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }
+
+    mediaQuery.addListener(handleChange);
+    return () => mediaQuery.removeListener(handleChange);
   }, []);
 
-  const toggleTheme = () => {
-    setIsDarkMode(prevMode => !prevMode);
-  };
+  const toggleTheme = useCallback(() => {
+    setIsDarkMode((prevMode) => !prevMode);
+  }, []);
 
-  const value = {
+  const value = useMemo(() => ({
     isDarkMode,
     toggleTheme,
     theme: isDarkMode ? 'dark' : 'light'
-  };
+  }), [isDarkMode, toggleTheme]);
 
   return (
     <ThemeContext.Provider value={value}>

@@ -1,9 +1,12 @@
+import { Suspense, lazy } from 'react';
 import PageTransition from '../components/PageTransition';
 import HeroSection from '../components/HeroSection';
-import StreamSchedule from '../components/StreamSchedule';
-import LatestVideos from '../components/LatestVideos';
-import MerchShowcase from '../components/MerchShowcase';
+import LoadingFallback from '../components/LoadingFallback';
 import { useConfigDatabase } from '../hooks/useConfigDatabase';
+
+const StreamSchedule = lazy(() => import('../components/StreamSchedule'));
+const LatestVideos = lazy(() => import('../components/LatestVideos'));
+const MerchShowcase = lazy(() => import('../components/MerchShowcase'));
 
 const HomePage = () => {
   const { config } = useConfigDatabase();
@@ -32,9 +35,15 @@ const HomePage = () => {
         </div>
       </section>
       
-      <StreamSchedule />
-      <LatestVideos />
-      <MerchShowcase />
+      <Suspense fallback={<LoadingFallback fullscreen={false} />}>
+        <StreamSchedule />
+      </Suspense>
+      <Suspense fallback={<LoadingFallback fullscreen={false} />}>
+        <LatestVideos />
+      </Suspense>
+      <Suspense fallback={<LoadingFallback fullscreen={false} />}>
+        <MerchShowcase />
+      </Suspense>
       
       {/* Community Section */}
       <section className="py-16 bg-shrine-teal/10 dark:bg-dark-bg">

@@ -5,6 +5,16 @@ import { useAuth } from '../hooks/useAuth';
 import AuthModal from './AuthModal';
 import DarkModeToggle from './DarkModeToggle';
 
+const NAV_LINKS = [
+  { to: '/', label: 'Home' },
+  { to: '/about', label: 'About' },
+  { to: '/schedule', label: 'Schedule' },
+  { to: '/content', label: 'Content' },
+  { to: '/merch', label: 'Merch' },
+  { to: '/gallery', label: 'Gallery' },
+  { to: '/connect', label: 'Connect' },
+];
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -31,20 +41,16 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <Link to="/" className="flex items-center">
+          <Link to="/" aria-label="Return to Fox Shrine home" className="flex items-center" viewTransition>
             <LogoPlaceholder className="h-10" />
           </Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
             <div className="flex space-x-8">
-              <NavLink to="/">Home</NavLink>
-              <NavLink to="/about">About</NavLink>
-              <NavLink to="/schedule">Schedule</NavLink>
-              <NavLink to="/content">Content</NavLink>
-              <NavLink to="/merch">Merch</NavLink>
-              <NavLink to="/gallery">Gallery</NavLink>
-              <NavLink to="/connect">Connect</NavLink>
+              {NAV_LINKS.map((link) => (
+                <PrimaryNavLink key={link.to} {...link} />
+              ))}
             </div>
             
             {/* Theme Toggle */}
@@ -115,7 +121,10 @@ const Navbar = () => {
           {/* Mobile Menu Button */}
           <button 
             className="md:hidden text-shrine-dark dark:text-dark-text focus:outline-none"
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => setIsOpen((prev) => !prev)}
+            aria-expanded={isOpen}
+            aria-controls="primary-navigation"
+            aria-label="Toggle primary navigation"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               {isOpen ? (
@@ -129,15 +138,11 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {!!isOpen && (
-          <div className="md:hidden mt-4 py-4 bg-shrine-white dark:bg-dark-card rounded-lg shadow-lg">
+          <div id="primary-navigation" className="md:hidden mt-4 py-4 bg-shrine-white dark:bg-dark-card rounded-lg shadow-lg">
             <div className="flex flex-col space-y-3 px-4">
-              <MobileNavLink to="/" onClick={() => setIsOpen(false)}>Home</MobileNavLink>
-              <MobileNavLink to="/about" onClick={() => setIsOpen(false)}>About</MobileNavLink>
-              <MobileNavLink to="/schedule" onClick={() => setIsOpen(false)}>Schedule</MobileNavLink>
-              <MobileNavLink to="/content" onClick={() => setIsOpen(false)}>Content</MobileNavLink>
-              <MobileNavLink to="/merch" onClick={() => setIsOpen(false)}>Merch</MobileNavLink>
-              <MobileNavLink to="/gallery" onClick={() => setIsOpen(false)}>Gallery</MobileNavLink>
-              <MobileNavLink to="/connect" onClick={() => setIsOpen(false)}>Connect</MobileNavLink>
+              {NAV_LINKS.map((link) => (
+                <MobileNavLink key={link.to} {...link} onClick={() => setIsOpen(false)} />
+              ))}
               
               {/* Mobile Theme Toggle */}
               <div className="flex items-center justify-between border-t border-gray-200 dark:border-dark-border pt-3 mt-3">
@@ -217,23 +222,25 @@ const Navbar = () => {
   );
 };
 
-const NavLink = ({ to, children }) => (
+const PrimaryNavLink = ({ to, label }) => (
   <Link 
     to={to} 
     className="font-cinzel text-shrine-dark dark:text-dark-text hover:text-shrine-red dark:hover:text-dark-shrine-red transition-colors relative group"
+    viewTransition
   >
-    {children}
+    {label}
     <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-shrine-red dark:bg-dark-shrine-red transition-all duration-300 group-hover:w-full"></span>
   </Link>
 );
 
-const MobileNavLink = ({ to, children, onClick }) => (
+const MobileNavLink = ({ to, label, onClick }) => (
   <Link 
     to={to} 
     className="font-cinzel text-shrine-dark dark:text-dark-text hover:text-shrine-red dark:hover:text-dark-shrine-red transition-colors py-2"
     onClick={onClick}
+    viewTransition
   >
-    {children}
+    {label}
   </Link>
 );
 
