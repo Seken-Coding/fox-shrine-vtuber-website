@@ -853,6 +853,86 @@ app.get('/api/admin/roles', authenticateToken, requirePermission('users.roles'),
 // Get all active configuration (guests can read, but with optional auth for logging)
 app.get('/api/config', optionalAuth, async (req, res) => {
     try {
+        // Helper to normalize legacy flat keys to nested dot-notation keys
+        const mapKey = (key) => {
+            if (!key || key.includes('.')) return key;
+            const mapping = {
+                // site
+                siteTitle: 'siteTitle',
+                siteDescription: 'siteDescription',
+                siteLogo: 'siteLogo',
+                siteUrl: 'siteUrl',
+                // character
+                characterName: 'character.name',
+                characterDescription: 'character.description',
+                characterImage: 'character.image',
+                characterGreeting: 'character.greeting',
+                // social
+                twitchUrl: 'social.twitchUrl',
+                youtubeUrl: 'social.youtubeUrl',
+                twitterUrl: 'social.twitterUrl',
+                discordUrl: 'social.discordUrl',
+                instagramUrl: 'social.instagramUrl',
+                // stream
+                streamTitle: 'stream.title',
+                streamCategory: 'stream.category',
+                isLive: 'stream.isLive',
+                nextStreamDate: 'stream.nextStreamDate',
+                streamNotification: 'stream.notification',
+                latestStreamEmbedUrl: 'stream.latestStreamEmbedUrl',
+                // theme
+                primaryColor: 'theme.primaryColor',
+                secondaryColor: 'theme.secondaryColor',
+                accentColor: 'theme.accentColor',
+                backgroundColor: 'theme.backgroundColor',
+                fontFamily: 'theme.fontFamily',
+                // features
+                showMerch: 'features.showMerch',
+                showDonations: 'features.showDonations',
+                showSchedule: 'features.showSchedule',
+                showLatestVideos: 'features.showLatestVideos',
+                enableNotifications: 'features.enableNotifications',
+                // content
+                heroTitle: 'content.heroTitle',
+                heroSubtitle: 'content.heroSubtitle',
+                aboutText: 'content.aboutText',
+                latestVideos: 'content.latestVideos',
+                schedule: 'content.schedule',
+                merch: 'content.merch',
+                // contact
+                businessEmail: 'contact.businessEmail',
+                fanEmail: 'contact.fanEmail',
+                supportEmail: 'contact.supportEmail',
+                // analytics
+                googleAnalyticsId: 'analytics.googleAnalyticsId',
+                enableAnalytics: 'analytics.enableAnalytics',
+                // system
+                maintenanceMode: 'system.maintenanceMode',
+                maintenanceMessage: 'system.maintenanceMessage',
+                emergencyNotice: 'system.emergencyNotice',
+            };
+            return mapping[key] || key;
+        };
+
+        // Helper to parse stored NVARCHAR values into useful JS types
+        const parseConfigValue = (val) => {
+            if (val === null || val === undefined) return val;
+            if (typeof val !== 'string') return val;
+            const trimmed = val.trim();
+            // JSON object/array
+            if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))){
+                try { return JSON.parse(trimmed); } catch {}
+            }
+            // booleans
+            if (/^(true|false)$/i.test(trimmed)) return /^true$/i.test(trimmed);
+            // numbers
+            if (/^-?\d+(?:\.\d+)?$/.test(trimmed)) {
+                const num = Number(trimmed);
+                if (Number.isFinite(num)) return num;
+            }
+            return val;
+        };
+
         const pool = await poolPromise;
         const result = await pool.request().execute('GetActiveConfiguration');
         
@@ -860,7 +940,8 @@ app.get('/api/config', optionalAuth, async (req, res) => {
         const config = {};
         result.recordset.forEach(row => {
             // Handle nested object notation (e.g., "character.name")
-            const keys = row.Key.split('.');
+            const transformedKey = mapKey(row.Key);
+            const keys = transformedKey.split('.');
             let current = config;
             
             for (let i = 0; i < keys.length - 1; i++) {
@@ -869,8 +950,8 @@ app.get('/api/config', optionalAuth, async (req, res) => {
                 }
                 current = current[keys[i]];
             }
-            
-            current[keys[keys.length - 1]] = row.Value;
+            // assign parsed value
+            current[keys[keys.length - 1]] = parseConfigValue(row.Value);
         });
         
         // Log access if user is authenticated
@@ -907,6 +988,65 @@ app.get('/api/config', optionalAuth, async (req, res) => {
 app.get('/api/config/:category', optionalAuth, async (req, res) => {
     try {
         const { category } = req.params;
+        const mapKey = (key) => {
+            if (!key || key.includes('.')) return key;
+            const mapping = {
+                characterName: 'character.name',
+                characterDescription: 'character.description',
+                characterImage: 'character.image',
+                characterGreeting: 'character.greeting',
+                twitchUrl: 'social.twitchUrl',
+                youtubeUrl: 'social.youtubeUrl',
+                twitterUrl: 'social.twitterUrl',
+                discordUrl: 'social.discordUrl',
+                instagramUrl: 'social.instagramUrl',
+                streamTitle: 'stream.title',
+                streamCategory: 'stream.category',
+                isLive: 'stream.isLive',
+                nextStreamDate: 'stream.nextStreamDate',
+                streamNotification: 'stream.notification',
+                latestStreamEmbedUrl: 'stream.latestStreamEmbedUrl',
+                primaryColor: 'theme.primaryColor',
+                secondaryColor: 'theme.secondaryColor',
+                accentColor: 'theme.accentColor',
+                backgroundColor: 'theme.backgroundColor',
+                fontFamily: 'theme.fontFamily',
+                showMerch: 'features.showMerch',
+                showDonations: 'features.showDonations',
+                showSchedule: 'features.showSchedule',
+                showLatestVideos: 'features.showLatestVideos',
+                enableNotifications: 'features.enableNotifications',
+                heroTitle: 'content.heroTitle',
+                heroSubtitle: 'content.heroSubtitle',
+                aboutText: 'content.aboutText',
+                latestVideos: 'content.latestVideos',
+                schedule: 'content.schedule',
+                merch: 'content.merch',
+                businessEmail: 'contact.businessEmail',
+                fanEmail: 'contact.fanEmail',
+                supportEmail: 'contact.supportEmail',
+                googleAnalyticsId: 'analytics.googleAnalyticsId',
+                enableAnalytics: 'analytics.enableAnalytics',
+                maintenanceMode: 'system.maintenanceMode',
+                maintenanceMessage: 'system.maintenanceMessage',
+                emergencyNotice: 'system.emergencyNotice',
+            };
+            return mapping[key] || key;
+        };
+        const parseConfigValue = (val) => {
+            if (val === null || val === undefined) return val;
+            if (typeof val !== 'string') return val;
+            const trimmed = val.trim();
+            if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))){
+                try { return JSON.parse(trimmed); } catch {}
+            }
+            if (/^(true|false)$/i.test(trimmed)) return /^true$/i.test(trimmed);
+            if (/^-?\d+(?:\.\d+)?$/.test(trimmed)) {
+                const num = Number(trimmed);
+                if (Number.isFinite(num)) return num;
+            }
+            return val;
+        };
         const pool = await poolPromise;
         const result = await pool.request()
             .input('Category', sql.NVarChar(50), category)
@@ -914,7 +1054,8 @@ app.get('/api/config/:category', optionalAuth, async (req, res) => {
         
         const config = {};
         result.recordset.forEach(row => {
-            const keys = row.Key.split('.');
+            const transformedKey = mapKey(row.Key);
+            const keys = transformedKey.split('.');
             let current = config;
             
             for (let i = 0; i < keys.length - 1; i++) {
@@ -923,8 +1064,7 @@ app.get('/api/config/:category', optionalAuth, async (req, res) => {
                 }
                 current = current[keys[i]];
             }
-            
-            current[keys[keys.length - 1]] = row.Value;
+            current[keys[keys.length - 1]] = parseConfigValue(row.Value);
         });
         
         res.json({
@@ -960,9 +1100,12 @@ app.put('/api/config/:key', authenticateToken, requirePermission('config.write')
         }
         
         const pool = await poolPromise;
+        // Stringify complex values (objects/arrays) to preserve JSON
+        const serialized = (value !== null && typeof value === 'object') ? JSON.stringify(value) : String(value);
+
         const result = await pool.request()
             .input('Key', sql.NVarChar(100), key)
-            .input('Value', sql.NVarChar(sql.MAX), String(value))
+            .input('Value', sql.NVarChar(sql.MAX), serialized)
             .input('Category', sql.NVarChar(50), category)
             .input('Description', sql.NVarChar(500), description)
             .input('UpdatedBy', sql.NVarChar(100), (req.user && req.user.username) || req.ip || 'api')
@@ -1029,9 +1172,10 @@ app.put('/api/config', authenticateToken, requirePermission('config.write'), val
                 continue; // Skip invalid entries
             }
             
+            const serialized = (value !== null && typeof value === 'object') ? JSON.stringify(value) : String(value);
             const result = await pool.request()
                 .input('Key', sql.NVarChar(100), key)
-                .input('Value', sql.NVarChar(sql.MAX), String(value))
+                .input('Value', sql.NVarChar(sql.MAX), serialized)
                 .input('Category', sql.NVarChar(50), category)
                 .input('Description', sql.NVarChar(500), description)
                 .input('UpdatedBy', sql.NVarChar(100), req.user.username || 'api')

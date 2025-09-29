@@ -3,8 +3,12 @@ import HeroSection from '../components/HeroSection';
 import StreamSchedule from '../components/StreamSchedule';
 import LatestVideos from '../components/LatestVideos';
 import MerchShowcase from '../components/MerchShowcase';
+import { useConfigDatabase } from '../hooks/useConfigDatabase';
 
 const HomePage = () => {
+  const { config } = useConfigDatabase();
+  const embedUrl = config?.stream?.latestStreamEmbedUrl || 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+  const social = config?.social || {};
   return (
     <PageTransition>
       <HeroSection />
@@ -16,7 +20,7 @@ const HomePage = () => {
           <div className="mt-8 max-w-4xl mx-auto">
             <div className="aspect-w-16 relative" style={{ paddingBottom: '56.25%' }}>
               <iframe 
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                src={embedUrl}
                 title="Latest Stream"
                 className="absolute top-0 left-0 w-full h-full rounded-lg"
                 frameBorder="0"
@@ -40,7 +44,7 @@ const HomePage = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <a 
-              href="https://discord.gg/" 
+              href={social.discordUrl || 'https://discord.gg/'} 
               target="_blank"
               rel="noopener noreferrer"
               className="shrine-card flex flex-col items-center p-8 hover:shadow-xl transition-shadow duration-300"
@@ -56,7 +60,7 @@ const HomePage = () => {
             </a>
             
             <a 
-              href="https://twitter.com/" 
+              href={social.twitterUrl || 'https://twitter.com/'} 
               target="_blank"
               rel="noopener noreferrer"
               className="shrine-card flex flex-col items-center p-8 hover:shadow-xl transition-shadow duration-300"
@@ -72,7 +76,7 @@ const HomePage = () => {
             </a>
             
             <a 
-              href="https://www.youtube.com/channel/" 
+              href={social.youtubeUrl || 'https://www.youtube.com/channel/'} 
               target="_blank"
               rel="noopener noreferrer"
               className="shrine-card flex flex-col items-center p-8 hover:shadow-xl transition-shadow duration-300"

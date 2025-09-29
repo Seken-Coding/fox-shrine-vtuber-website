@@ -46,9 +46,9 @@ const mockUseAuth = (overrides) => {
     const Pass = ({ children }) => ReactLib.createElement(ReactLib.Fragment, null, children);
     return { __esModule: true, default: Pass };
   });
-  // Stub providers that use hooks to avoid invalid hook call warnings
-  jest.doMock('react-helmet-async', () => ({
-    HelmetProvider: ({ children }) => ReactLib.createElement('div', null, children),
+  // Stub Helmet to avoid DOM head side-effects
+  jest.doMock('react-helmet', () => ({
+    Helmet: ({ children }) => ReactLib.createElement('div', null, children),
   }));
   jest.doMock('./contexts/ThemeContext', () => {
     const ReactLib3 = require('react');

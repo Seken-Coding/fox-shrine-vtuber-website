@@ -1,40 +1,16 @@
 import { PlaceholderImage } from './PlaceholderImages';
-
-const videoData = [
-  {
-    id: '1',
-    title: 'Forest Spirit Adventure - Part 1',
-    thumbnail: '/thumbnails/video1.jpg',
-    views: '12K',
-    date: '2 days ago',
-    duration: '2:34:17'
-  },
-  {
-    id: '2',
-    title: 'Chat & Chill: Ask Me Anything!',
-    thumbnail: '/thumbnails/video2.jpg',
-    views: '8.5K',
-    date: '5 days ago',
-    duration: '1:47:22'
-  },
-  {
-    id: '3',
-    title: 'Scary Games Night (I was so brave!)',
-    thumbnail: '/thumbnails/video3.jpg',
-    views: '15K',
-    date: '1 week ago',
-    duration: '3:12:45'
-  }
-];
+import { useConfigDatabase } from '../hooks/useConfigDatabase';
 
 const LatestVideos = () => {
+  const { config } = useConfigDatabase();
+  const videos = Array.isArray(config?.content?.latestVideos) ? config.content.latestVideos : [];
   return (
     <section className="py-16 bg-shrine-white dark:bg-dark-bg">
       <div className="container mx-auto px-4">
   <h2 className="section-title">Latest Videos</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
-          {videoData.map(video => (
+          {(videos.length ? videos : []).map(video => (
             <div key={video.id} className="group">
               <div className="relative overflow-hidden rounded-lg shadow-lg">
                 <PlaceholderImage 

@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { HelmetProvider } from 'react-helmet-async';
 import { ConfigProvider } from './hooks/useConfigDatabase';
 import { AuthProvider } from './hooks/useAuth';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -22,7 +21,6 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   return (
-    <HelmetProvider>
       <ThemeProvider>
         <AuthProvider>
           <ConfigProvider>
@@ -71,7 +69,6 @@ function App() {
           </ConfigProvider>
         </AuthProvider>
       </ThemeProvider>
-    </HelmetProvider>
   );
 }
 

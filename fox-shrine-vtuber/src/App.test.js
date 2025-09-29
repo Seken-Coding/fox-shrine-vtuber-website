@@ -18,9 +18,49 @@ jest.mock('./hooks/useConfigDatabase', () => ({
   useConfig: () => ({
     config: {
       siteTitle: 'Fox Shrine VTuber',
-      // Mock other necessary config properties
+      social: {
+        twitchUrl: 'https://twitch.tv/foxshrine',
+        youtubeUrl: 'https://youtube.com/@foxshrine',
+        twitterUrl: 'https://twitter.com/foxshrine',
+        discordUrl: 'https://discord.gg/foxshrine',
+        instagramUrl: 'https://instagram.com/foxshrine',
+      },
+      stream: {
+        latestStreamEmbedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      },
+      content: {
+        latestVideos: [],
+        schedule: [],
+        merch: [],
+      },
     },
     loading: false,
+  }),
+  useConfigDatabase: () => ({
+    config: {
+      siteTitle: 'Fox Shrine VTuber',
+      social: {
+        twitchUrl: 'https://twitch.tv/foxshrine',
+        youtubeUrl: 'https://youtube.com/@foxshrine',
+        twitterUrl: 'https://twitter.com/foxshrine',
+        discordUrl: 'https://discord.gg/foxshrine',
+        instagramUrl: 'https://instagram.com/foxshrine',
+      },
+      stream: {
+        latestStreamEmbedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      },
+      content: {
+        latestVideos: [],
+        schedule: [],
+        merch: [],
+      },
+    },
+    loading: false,
+    error: null,
+    lastSync: null,
+    isOnline: true,
+    updateConfig: jest.fn(),
+    refreshConfig: jest.fn(),
   }),
 }));
 

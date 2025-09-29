@@ -1,37 +1,9 @@
 import { PlaceholderImage } from './PlaceholderImages';
-
-const merchData = [
-  {
-    id: 'm1',
-    name: 'Fox Plushie',
-    image: '/merch/plushie.jpg',
-    price: '$24.99',
-    isNew: true
-  },
-  {
-    id: 'm2',
-    name: 'Shrine Hoodie',
-    image: '/merch/hoodie.jpg',
-    price: '$49.99',
-    isNew: false
-  },
-  {
-    id: 'm3',
-    name: 'Magical Fox Mug',
-    image: '/merch/mug.jpg',
-    price: '$18.99',
-    isNew: false
-  },
-  {
-    id: 'm4',
-    name: 'Limited Edition Pin Set',
-    image: '/merch/pins.jpg',
-    price: '$15.99',
-    isNew: true
-  }
-];
+import { useConfigDatabase } from '../hooks/useConfigDatabase';
 
 const MerchShowcase = () => {
+  const { config } = useConfigDatabase();
+  const merchData = Array.isArray(config?.content?.merch) ? config.content.merch : [];
   return (
     <section className="py-16 bg-gray-50 dark:bg-dark-bg relative overflow-hidden">
       {/* Decorative shrine gates */}

@@ -1,36 +1,8 @@
-
-const scheduleData = [
-  {
-    day: 'Monday',
-    time: '7:00 PM - 10:00 PM',
-    title: 'Chatting & Games',
-    description: 'Starting the week with chill vibes and fun games',
-    icon: '🎮'
-  },
-  {
-    day: 'Wednesday',
-    time: '8:00 PM - 11:00 PM',
-    title: 'Adventure Games',
-    description: 'Join the journey through mysterious worlds',
-    icon: '🗺️'
-  },
-  {
-    day: 'Friday',
-    time: '9:00 PM - 12:00 AM',
-    title: 'Fox Friday Funtime',
-    description: 'End the week with maximum silliness and games',
-    icon: '🦊'
-  },
-  {
-    day: 'Sunday',
-    time: '3:00 PM - 7:00 PM',
-    title: 'Shrine Stories',
-    description: 'Relax with shrine tales and community time',
-    icon: '⛩️'
-  }
-];
+import { useConfigDatabase } from '../hooks/useConfigDatabase';
 
 const StreamSchedule = () => {
+  const { config } = useConfigDatabase();
+  const scheduleData = Array.isArray(config?.content?.schedule) ? config.content.schedule : [];
   return (
     <section className="py-16 bg-shrine-white dark:bg-dark-bg">
       <div className="container mx-auto px-4">

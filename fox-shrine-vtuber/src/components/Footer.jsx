@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
 import { FaTwitch, FaYoutube, FaTwitter, FaDiscord, FaInstagram } from 'react-icons/fa';
 import { LogoPlaceholder } from './PlaceholderImages';
+import { useConfigDatabase } from '../hooks/useConfigDatabase';
 
 const Footer = () => {
+  const { config } = useConfigDatabase();
+  const social = config?.social || {};
   return (
     <footer className="bg-shrine-dark dark:bg-gray-900 text-shrine-white dark:text-dark-text pt-12 pb-6">
       <div className="container mx-auto px-4">
@@ -43,19 +46,19 @@ const Footer = () => {
           <div>
             <h3 className="font-cinzel text-lg mb-4 text-shrine-gold dark:text-dark-shrine-gold">Connect</h3>
             <div className="flex space-x-4 mb-6">
-              <a href="https://twitch.tv/" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-purple-400 transition">
+              <a href={social.twitchUrl || 'https://twitch.tv/'} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-purple-400 transition">
                 <FaTwitch size={24} />
               </a>
-              <a href="https://youtube.com/" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-red-500 transition">
+              <a href={social.youtubeUrl || 'https://youtube.com/'} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-red-500 transition">
                 <FaYoutube size={24} />
               </a>
-              <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-blue-400 transition">
+              <a href={social.twitterUrl || 'https://twitter.com/'} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-blue-400 transition">
                 <FaTwitter size={24} />
               </a>
-              <a href="https://discord.gg/" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-indigo-400 transition">
+              <a href={social.discordUrl || 'https://discord.gg/'} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-indigo-400 transition">
                 <FaDiscord size={24} />
               </a>
-              <a href="https://instagram.com/" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-pink-400 transition">
+              <a href={social.instagramUrl || 'https://instagram.com/'} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-pink-400 transition">
                 <FaInstagram size={24} />
               </a>
             </div>
