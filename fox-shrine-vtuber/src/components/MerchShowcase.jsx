@@ -1,5 +1,34 @@
+import { useState } from 'react';
 import { PlaceholderImage } from './PlaceholderImages';
 import { useConfigDatabase } from '../hooks/useConfigDatabase';
+
+const MerchImage = ({ src, alt }) => {
+  const [hasError, setHasError] = useState(false);
+  const hasValidSource = typeof src === 'string' && src.trim().length > 0;
+
+  if (!hasValidSource || hasError) {
+    return (
+      <PlaceholderImage
+        width="100%"
+        height="100%"
+        text="🛍️ Merch"
+        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+      />
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+      onError={() => setHasError(true)}
+      referrerPolicy="no-referrer"
+    />
+  );
+};
 
 const MerchShowcase = () => {
   const { config } = useConfigDatabase();
@@ -35,11 +64,9 @@ const MerchShowcase = () => {
                     )}
                     
                     <div className="h-64 overflow-hidden">
-                      <PlaceholderImage 
-                        width="100%"
-                        height="100%"
-                        text="🛍️ Merch"
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      <MerchImage
+                        src={item.image}
+                        alt={item.name ? `${item.name} merch item` : 'Merch item'}
                       />
                     </div>
                     

@@ -14,13 +14,13 @@ const MerchPage = () => {
     <PageTransition>
       <SEO 
         title="Merchandise" 
-        description="Official Fox Shrine VTuber merchandise - support your favorite fox with quality merch!" 
+        description="Official Mei merchandise - support your favorite fox with quality merch!" 
       />
       
       <div className="pt-24 pb-16">
         <div className="container mx-auto px-4">
           <AnimatedPageHeader 
-            title="Fox Shrine Merchandise"
+            title="Mei Merchandise"
             description="Show your support and spread the fox shrine magic with our exclusive merchandise collection!"
           />
 
@@ -51,60 +51,28 @@ const MerchPage = () => {
 
               <ShrineCard index={1} className="p-8">
                 <h3 className="font-cinzel text-xl text-shrine-red mb-4">
-                  🦊 Support the Shrine
+                  🦊 Support the Gremlin
                 </h3>
                 <p className="mb-4">
                   Your merchandise purchases directly support the creation of more content and 
-                  help maintain the magical world of Fox Shrine!
+                  helps feeding this cute Fox!
                 </p>
                 <ul className="space-y-2">
                   <li>• Funds new equipment for better streams</li>
                   <li>• Supports content creation</li>
-                  <li>• Helps grow the Fox Shrine community</li>
+                  <li>• Helps growing the community</li>
                   <li>• Enables special events and collaborations</li>
                 </ul>
               </ShrineCard>
             </AnimatedContainer>
           </AnimatedSection>
-
-          {/* Shipping & Returns Section */}
-          <AnimatedSection className="mb-16" delay={0.4}>
-            <ShrineCard className="p-8">
-              <h2 className="section-title mb-8">Shipping & Returns</h2>
-              <AnimatedContainer className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <ShrineCard index={0} className="text-center p-6">
-                  <div className="text-4xl mb-4">📦</div>
-                  <h3 className="font-cinzel text-xl text-shrine-red mb-2">Fast Shipping</h3>
-                  <p>
-                    Orders processed within 1-2 business days. Free shipping on orders over $50!
-                  </p>
-                </ShrineCard>
-                
-                <ShrineCard index={1} className="text-center p-6">
-                  <div className="text-4xl mb-4">🔄</div>
-                  <h3 className="font-cinzel text-xl text-shrine-red mb-2">Easy Returns</h3>
-                  <p>
-                    30-day return policy for unworn items. We want you to be completely satisfied!
-                  </p>
-                </ShrineCard>
-                
-                <ShrineCard index={2} className="text-center p-6">
-                  <div className="text-4xl mb-4">🌍</div>
-                  <h3 className="font-cinzel text-xl text-shrine-red mb-2">Worldwide</h3>
-                  <p>
-                    We ship to most countries worldwide. Bringing Fox Shrine magic everywhere!
-                  </p>
-                </ShrineCard>
-              </AnimatedContainer>
-            </ShrineCard>
-          </AnimatedSection>
-
+          
           {/* Social Share Section */}
           <AnimatedSection delay={0.6}>
             <ShrineCard className="p-8 text-center">
-              <h2 className="section-title text-center mb-6">Share Your Fox Style</h2>
+              <h2 className="section-title text-center mb-6">Share Your Mei Drip</h2>
               <p className="mb-8">
-                Got Fox Shrine merch? Share your photos and tag us to be featured on our social media!
+                Got Mei merch? Share your photos and tag us to be featured on our social media!
               </p>
               <SocialShare />
             </ShrineCard>
