@@ -36,7 +36,6 @@ const Footer = () => {
             <h3 className="font-cinzel text-lg mb-4 text-shrine-gold dark:text-dark-shrine-gold">Resources</h3>
             <ul className="space-y-2">
               <li><Link to="/faq" className="text-gray-300 dark:text-dark-text-secondary hover:text-fox-orange dark:hover:text-dark-fox-orange transition">FAQ</Link></li>
-              <li><Link to="/contact" className="text-gray-300 dark:text-dark-text-secondary hover:text-fox-orange dark:hover:text-dark-fox-orange transition">Contact</Link></li>
               <li><Link to="/terms" className="text-gray-300 dark:text-dark-text-secondary hover:text-fox-orange dark:hover:text-dark-fox-orange transition">Terms of Service</Link></li>
               <li><Link to="/privacy" className="text-gray-300 dark:text-dark-text-secondary hover:text-fox-orange dark:hover:text-dark-fox-orange transition">Privacy Policy</Link></li>
             </ul>
@@ -58,9 +57,9 @@ const Footer = () => {
               <a href={social.discordUrl || 'https://discord.gg/'} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-indigo-400 transition">
                 <FaDiscord size={24} />
               </a>
-              <a href={social.instagramUrl || 'https://instagram.com/'} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-pink-400 transition">
+              {/* <a href={social.instagramUrl || 'https://instagram.com/'} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-pink-400 transition">
                 <FaInstagram size={24} />
-              </a>
+              </a> */}
             </div>
             
             <h4 className="font-cinzel text-sm mb-2 text-shrine-gold dark:text-dark-shrine-gold">Subscribe to Newsletter</h4>

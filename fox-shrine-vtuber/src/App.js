@@ -18,7 +18,6 @@ const SchedulePage = lazy(() => import('./pages/SchedulePage'));
 const ContentPage = lazy(() => import('./pages/ContentPage'));
 const MerchPage = lazy(() => import('./pages/MerchPage'));
 const GalleryPage = lazy(() => import('./pages/GalleryPage'));
-const ContactPage = lazy(() => import('./pages/ContactPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 // ProtectedRoute is now a component under components/ for easier testing
@@ -51,7 +50,6 @@ function App() {
                       <Route path="/content" element={<ContentPage />} />
                       <Route path="/merch" element={<MerchPage />} />
                       <Route path="/gallery" element={<GalleryPage />} />
-                      <Route path="/connect" element={<ContactPage />} />
                       <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                   </Suspense>

@@ -76,12 +76,6 @@ const defaultConfig = {
     ]
   },
   
-  contact: {
-    businessEmail: 'business@foxshrinevtuber.com',
-    fanEmail: 'fanart@foxshrinevtuber.com',
-    supportEmail: 'support@foxshrinevtuber.com'
-  },
-  
   system: {
     maintenanceMode: false,
     maintenanceMessage: 'The shrine is currently under magical maintenance! Please check back soon! 🦊✨',

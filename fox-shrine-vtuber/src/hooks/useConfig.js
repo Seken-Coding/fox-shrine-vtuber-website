@@ -66,13 +66,6 @@ const getDefaultConfig = () => {
       heroSubtitle: 'Join me on a magical journey filled with laughter, games, and shrine fox mischief!',
       aboutText: 'Legend has it that I was once a regular fox who stumbled upon an abandoned shrine deep in the mystical forest. After years of guarding it and absorbing its magical energy, I gained the ability to take human form and connect with the human world!'
     },
-    
-    contact: {
-      businessEmail: 'business@foxshrinevtuber.com',
-      fanEmail: 'fanart@foxshrinevtuber.com',
-      supportEmail: 'support@foxshrinevtuber.com'
-    },
-    
     system: {
       maintenanceMode: false,
       maintenanceMessage: 'The shrine is currently under magical maintenance! Please check back soon! 🦊✨',

@@ -15,7 +15,6 @@ Fox Shrine Admin Panel
 │   ├── Content Pages
 │   ├── Merch Store
 │   ├── Gallery
-│   ├── Contact & Community
 │   └── Schedule
 ├── Animation Settings
 │   ├── Global Animations
@@ -181,69 +180,6 @@ galleryPage:
       animation: "staggered"
       staggerDelay: 0.1
     submissionGuidelines:
-      delay: 0.4
-      animation: "fadeInUp"
-```
-
-#### Contact Page Configuration
-```yaml
-contactPage:
-  settings:
-    title: "Connect with Fox Shrine"
-    description: "Join our magical community..."
-    socialPlatforms:
-      - id: "discord"
-        icon: "💬"
-        title: "Discord"
-        description: "Join our Discord server for real-time chat..."
-        buttonText: "Join Discord"
-        url: "https://discord.gg/foxshrine"
-        enabled: true
-      - id: "twitter"
-        icon: "🐦"
-        title: "Twitter"
-        description: "Follow us for daily updates..."
-        buttonText: "Follow on Twitter"
-        url: "https://twitter.com/foxshrine"
-        enabled: true
-      - id: "youtube"
-        icon: "📺"
-        title: "YouTube"
-        description: "Subscribe for stream highlights..."
-        buttonText: "Subscribe on YouTube"
-        url: "https://youtube.com/@foxshrine"
-        enabled: true
-    contactForm:
-      enabled: true
-      fields:
-        - id: "name"
-          type: "text"
-          label: "Name"
-          required: true
-        - id: "email"
-          type: "email"
-          label: "Email"
-          required: true
-        - id: "subject"
-          type: "text"
-          label: "Subject"
-          required: false
-        - id: "message"
-          type: "textarea"
-          label: "Message"
-          required: true
-          rows: 6
-      responseTime: "24-48 hours"
-    communityTags: ["#FoxShrine", "#VTuber", "#Community", "#MagicalMoments"]
-  animations:
-    socialPlatforms:
-      delay: 0
-      animation: "staggered"
-      staggerDelay: 0.1
-    contactForm:
-      delay: 0.2
-      animation: "fadeInUp"
-    communitySection:
       delay: 0.4
       animation: "fadeInUp"
 ```

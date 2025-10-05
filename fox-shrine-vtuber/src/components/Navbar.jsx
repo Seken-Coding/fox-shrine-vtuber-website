@@ -11,8 +11,7 @@ const NAV_LINKS = [
   { to: '/schedule', label: 'Schedule' },
   { to: '/content', label: 'Content' },
   { to: '/merch', label: 'Merch' },
-  { to: '/gallery', label: 'Gallery' },
-  { to: '/connect', label: 'Connect' },
+  { to: '/gallery', label: 'Gallery' }
 ];
 
 const Navbar = () => {

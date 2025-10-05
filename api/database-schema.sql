@@ -82,11 +82,6 @@ INSERT INTO [dbo].[Configuration] ([Key], [Value], [Category], [Description]) VA
 ('heroSubtitle', 'Join me on a magical journey filled with laughter, games, and shrine fox mischief!', 'content', 'Hero section subtitle'),
 ('aboutText', 'Legend has it that I was once a regular fox who stumbled upon an abandoned shrine deep in the mystical forest. After years of guarding it and absorbing its magical energy, I gained the ability to take human form and connect with the human world!', 'content', 'About section text'),
 
--- Contact Information
-('businessEmail', 'business@foxshrinevtuber.com', 'contact', 'Business inquiries email'),
-('fanEmail', 'fanart@foxshrinevtuber.com', 'contact', 'Fan art submissions email'),
-('supportEmail', 'support@foxshrinevtuber.com', 'contact', 'Technical support email'),
-
 -- Analytics
 ('googleAnalyticsId', '', 'analytics', 'Google Analytics tracking ID'),
 ('enableAnalytics', 'false', 'analytics', 'Enable analytics tracking'),
